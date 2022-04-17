@@ -1,0 +1,32 @@
+{
+	"name": "Copy On Select",
+	
+	"description": "A productivity tool which copies selected text to the clipboard automatically.",
+	
+	"version": "1.0",
+	
+	"icons": {
+		"128" : "copy-on-select-128.png"
+	},
+	
+	"permissions": [
+		"tabs",
+		"http://*/*",
+		"https://*/*"
+	],
+	
+	"content_scripts" : [
+		{
+			"matches" : [
+				"http://*/*",
+				"https://*/*"
+			],
+			"js" : [
+				"copy-on-select.js"
+			],
+			"run_at" : "document_end"
+		}
+	],
+	
+	"manifest_version" : 2
+}
