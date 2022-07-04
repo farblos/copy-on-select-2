@@ -11,9 +11,9 @@ https://addons.mozilla.org/en-US/firefox/addon/copy-on-select by
 late
 [spyrosoft](https://addons.mozilla.org/en-US/firefox/user/5778000).
 Compared to the original add-on, the metadata of this add-on has
-been modified to extent its scope also to file-based URLs.
+been modified to extend its scope also to file-based URLs.
 
-The strength of both add-ons is their extreme simplicity (8 lines
+The strength of both add-ons is their extreme simplicity (9 lines
 of code only!): Whenever you raise a mouse button, the current
 selection, if any, is copied to the clipboard.  As you might have
 guessed, that simplicity comes at a cost: This add-on works
