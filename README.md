@@ -13,12 +13,12 @@ late
 Compared to the original add-on, the metadata of this add-on has
 been modified to extend its scope also to file-based URLs.
 
-The strength of both add-ons is their extreme simplicity (9 lines
-of code only!): Whenever you raise a mouse button, the current
-selection, if any, is copied to the clipboard.  As you might have
-guessed, that simplicity comes at a cost: This add-on works
-reliably only in the most basic scenario, namely when copying
-text from a web page.
+The strength of both add-ons is their extreme simplicity (10
+lines of code only!): Whenever you raise a mouse button, the
+current selection, if any, is copied to the clipboard.  As you
+might have guessed, that simplicity comes at a cost: This add-on
+works reliably only in the most basic scenario, namely when
+copying text from a web page.
 
 Much more feature-complete, probably even feature-bloated, is
 [AutocopySelection2Clipboard](https://addons.mozilla.org/en-US/firefox/addon/autocopyselection2clipboard),
@@ -31,3 +31,16 @@ is
 - [Mozilla Firefox][link-amo]
 
   [![Firefox Latest](https://img.shields.io/amo/v/copy-on-select-2)][link-amo]
+
+## Version History
+
+Version 2.1
+
+- Fixes issue [#1][issue_1].
+
+Version 2.0
+
+- Provides a clone of the original add-on with metadata modified
+  to extend its scope also to file-based URLs.
+
+[issue_1]: https://github.com/farblos/copy-on-select-2/issues/1
