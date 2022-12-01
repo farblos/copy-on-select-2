@@ -1,9 +1,10 @@
 window.addEventListener(
-	'mouseup',
-	function() {
-		if (document.getSelection().toString() != '') {
-			document.execCommand('copy');
-		}
-	},
-	false
+  'mouseup',
+  function( e ) {
+    if ( (document.getSelection().toString().length > 0) &&
+         ((new URL( document.URL )).hostname !== "docs.google.com") ) {
+      document.execCommand( 'copy' );
+    }
+  },
+  false
 );
