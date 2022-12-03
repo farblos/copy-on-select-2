@@ -36,7 +36,9 @@ is
 
 Version 2.1
 
-- Fixes issue [#1][issue_1].
+- Fixes issue [Dont work at docs.google.com/spreadsheets][issue_1]:
+
+  Ignores all events on pages from `docs.google.com`.
 
 Version 2.0
 
