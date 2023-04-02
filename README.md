@@ -39,7 +39,7 @@ is
 
 ## Version History
 
-Version 2.2.0
+Version 2.2
 
 - Supports copy-on-select in iframes.
 
