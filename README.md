@@ -10,8 +10,8 @@ This is a fork of
 https://addons.mozilla.org/en-US/firefox/addon/copy-on-select by
 late
 [spyrosoft](https://addons.mozilla.org/en-US/firefox/user/5778000).
-Compared to the original add-on, the metadata of this add-on has
-been modified to extend its scope also to file-based URLs.
+See the [version history](#version-history) below for information
+on what has changed since the fork.
 
 The strength of both add-ons is their extreme simplicity (10
 lines of code only!): Whenever you raise a mouse button, the
@@ -38,6 +38,10 @@ is
   -->
 
 ## Version History
+
+Version 2.2.0
+
+- Supports copy-on-select in iframes.
 
 Version 2.1
 
