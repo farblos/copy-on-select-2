@@ -25,14 +25,36 @@ jobs:
 
       - name: Determine Some Strings from Tag
         run: |
-          # determine v-prefixed version, simple version, XPI
-          # base name
-          vversion="${{ github.ref_name }}"
-          sversion=${vversion#v}
+          # determine tag name
+          tagname="${{ github.ref_name }}"
+
+          # check tag name format
+          if [[ ! ($tagname =~ ^(v2\.[0-9]+)(\.[0-9]+)?$) ]]; then
+            echo "Cannot process tag \"$tagname\"." 1>&2
+            exit 1
+          fi
+
+          # determine v-prefixed version, simple version,
+          # extension version, XPI base name and export them
+          vversion=$tagname
+          sversion=${tagname#v}
+          [[ $tagname =~ ^v(2\.[0-9]+)(\.[0-9]+)?$ ]]
+          xversion=${BASH_REMATCH[1]}
           xpibname="copy-on-select-2-unsigned-$sversion.xpi"
           echo "vversion=$vversion" >> $GITHUB_ENV
           echo "sversion=$sversion" >> $GITHUB_ENV
+          echo "xversion=$xversion" >> $GITHUB_ENV
           echo "xpibname=$xpibname" >> $GITHUB_ENV
+
+        # ensure the new version is maintained in the XPI
+        # manifest
+      - name: Verify Manifest
+        run: |
+          mversion=$( jq -r '.version' src/manifest.json )
+          if [[ $xversion != $mversion ]]; then
+            echo "Cannot find version \"$xversion\" in manifest." 1>&2
+            exit 1
+          fi
 
         # ensure the new version is described in the version
         # history and use its description as release description
@@ -53,18 +75,18 @@ jobs:
           /^Version [0-9](\.[0-9]+)+$/ {
             cversion = $2; getline; next;
           }
-          (cversion == sversion) {
+          (cversion == xversion) {
             versfndp = 1; print; next;
           }
           END {
             if ( ! versfndp ) {
-              print "Cannot find version \"" sversion "\" in history." > "/dev/stderr"
+              print "Cannot find version \"" xversion "\" in history." > "/dev/stderr"
               exit 1;
             }
           }
           EOF
 
-          awk -v sversion="$sversion"           \
+          awk -v xversion="$xversion"           \
               -f tmp/parsehist.awk              \
               README.md                         |
           # remove one trailing newline
@@ -80,10 +102,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           draft=""
-          if [[ $sversion =~ ^2\.[0-9]+$ ]]; then
-            draft=""
-          else
+          if [[ $xversion != $sversion ]]; then
             draft="--draft"
+          else
+            draft=""
           fi
 
           gh release create $draft              \
