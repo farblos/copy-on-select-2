@@ -32,6 +32,11 @@ is
 
   [![Firefox Latest](https://img.shields.io/amo/v/copy-on-select-2)][link-amo]
 
+<!--
+  == Keep GitHub workflow release.yml in sync with the format of
+  == the section below.
+  -->
+
 ## Version History
 
 Version 2.1
@@ -40,9 +45,9 @@ Version 2.1
 
   Ignores all events on pages from `docs.google.com`.
 
+[issue_1]: https://github.com/farblos/copy-on-select-2/issues/1
+
 Version 2.0
 
 - Provides a clone of the original add-on with metadata modified
   to extend its scope also to file-based URLs.
-
-[issue_1]: https://github.com/farblos/copy-on-select-2/issues/1

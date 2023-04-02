@@ -1,0 +1,92 @@
+#
+# release.yml - simple, shell-based release workflow for
+#   WebExtensions.
+#
+
+name: Release WebExtension
+
+on:
+  push:
+    tags: [ "v*" ]
+
+jobs:
+  release:
+    name: Release WebExtension
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -e -o pipefail {0}
+
+    steps:
+
+      - name: Check Out Sources
+        uses: actions/checkout@v3
+
+      - name: Determine Some Strings from Tag
+        run: |
+          # determine v-prefixed version, simple version, XPI
+          # base name
+          vversion="${{ github.ref_name }}"
+          sversion=${vversion#v}
+          xpibname="copy-on-select-2-unsigned-$sversion.xpi"
+          echo "vversion=$vversion" >> $GITHUB_ENV
+          echo "sversion=$sversion" >> $GITHUB_ENV
+          echo "xpibname=$xpibname" >> $GITHUB_ENV
+
+        # ensure the new version is described in the version
+        # history and use its description as release description
+      - name: Determine Release Description
+        run: |
+          mkdir -p tmp
+
+          cat << 'EOF' > tmp/parsehist.awk
+          BEGIN {
+            invhistp = 0;
+            cversion = "";
+            versfndp = 0;
+          }
+          (! invhistp) && (/^## Version History$/) {
+            invhistp = 1; getline; next;
+          }
+          (! invhistp) { next; }
+          /^Version [0-9](\.[0-9]+)+$/ {
+            cversion = $2; getline; next;
+          }
+          (cversion == sversion) {
+            versfndp = 1; print; next;
+          }
+          END {
+            if ( ! versfndp ) {
+              print "Cannot find version \"" sversion "\" in history." > "/dev/stderr"
+              exit 1;
+            }
+          }
+          EOF
+
+          awk -v sversion="$sversion"           \
+              -f tmp/parsehist.awk              \
+              README.md                         |
+          # remove one trailing newline
+          sed -n '/^ *$/!{p;d}; $!{p;d}' > tmp/reldesc.md
+
+      - name: Create XPI
+        run: |
+          mkdir -p build
+          zip -jqr "build/$xpibname" src
+
+      - name: Create Release and Upload XPI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          draft=""
+          if [[ $sversion =~ ^2\.[0-9]+$ ]]; then
+            draft=""
+          else
+            draft="--draft"
+          fi
+
+          gh release create $draft              \
+             --title "Version $sversion"        \
+             --notes-file tmp/reldesc.md        \
+             "$vversion" "build/$xpibname"
