@@ -1,4 +1,4 @@
-window.addEventListener(
+(document.body || document || window).addEventListener(
   'mouseup',
   function( e ) {
     if ( (document.getSelection().toString().length > 0) &&
