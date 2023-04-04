@@ -20,6 +20,31 @@ might have guessed, that simplicity comes at a cost: This add-on
 works reliably only in the most basic scenario, namely when
 copying text from a web page.
 
+Here are some cases which are difficult or outright impossible to
+handle for this add-on:
+
+- Technically impossible:
+
+  Firefox user interface elements outside of the main web page
+  (URL bar, dialogues, etc.)
+
+  Special Firefox pages (`about:*`, `view-source:*`), XML
+  documents
+
+- Technically possible but with questionable use, hence not
+  implemented:
+
+  Input elements on web pages
+
+- Probably possible, probably not:
+
+  JavaScript-heavy web pages, in particular if they do funny
+  things with the selection (https://docs.google.com).
+
+Please consider opening an issue on the [support
+site](https://github.com/farblos/copy-on-select-2/issues) if you
+experience a web page where this add-on does not copy-on-select.
+
 Much more feature-complete, probably even feature-bloated, is
 [AutocopySelection2Clipboard](https://addons.mozilla.org/en-US/firefox/addon/autocopyselection2clipboard),
 but that disappeared from AMO in early 2022.  Another alternative
@@ -38,6 +63,15 @@ is
   -->
 
 ## Version History
+
+Version 2.3
+
+- Fixes issue [Use more appropriate event sources][issue_4].
+
+  (And still 10 lines of code only!  But they are getting
+  longer.)
+
+[issue_4]: https://github.com/farblos/copy-on-select-2/issues/4
 
 Version 2.2
 

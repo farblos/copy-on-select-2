@@ -5,7 +5,7 @@
 
   "description": "A productivity tool which copies selected text to the clipboard automatically.",
 
-  "version": "2.2",
+  "version": "2.3",
 
   "icons": {
     "128" : "copy-on-select-128.png"
