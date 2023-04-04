@@ -41,9 +41,9 @@ handle for this add-on:
   JavaScript-heavy web pages, in particular if they do funny
   things with the selection (https://docs.google.com).
 
-  Please consider opening an issue on the [support
-  site](https://github.com/farblos/copy-on-select-2/issues) if
-  you experience such a web page.
+Please consider opening an issue on the [support
+site](https://github.com/farblos/copy-on-select-2/issues) if you
+experience a web page where this add-on does not copy-on-select.
 
 Much more feature-complete, probably even feature-bloated, is
 [AutocopySelection2Clipboard](https://addons.mozilla.org/en-US/firefox/addon/autocopyselection2clipboard),
