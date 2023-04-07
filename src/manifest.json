@@ -1,31 +1,35 @@
 {
   "name": "Copy On Select 2",
-
-  "homepage_url": "https://github.com/farblos/copy-on-select-2",
-
   "description": "A productivity tool which copies selected text to the clipboard automatically.",
-
-  "version": "2.3",
+  "homepage_url": "https://github.com/farblos/copy-on-select-2",
+  "version": "2.4",
 
   "icons": {
-    "128" : "copy-on-select-128.png"
+    "128": "copy-on-select-128.png"
   },
 
   "permissions": [
+    "storage",
+    "clipboardWrite"
   ],
 
-  "content_scripts" : [
+  "content_scripts": [
     {
-      "matches" : [
+      "matches": [
         "<all_urls>"
       ],
-      "js" : [
+      "js": [
         "copy-on-select.js"
       ],
-      "all_frames" : true,
-      "run_at" : "document_end"
+      "all_frames": true,
+      "run_at": "document_end"
     }
   ],
 
-  "manifest_version" : 2
+  "options_ui": {
+    "page": "options.html",
+    "browser_style": true
+  },
+
+  "manifest_version": 2
 }
