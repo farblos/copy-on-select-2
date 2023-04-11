@@ -2,6 +2,7 @@
   "name": "Copy On Select 2",
   "description": "A productivity tool which copies selected text to the clipboard automatically.",
   "homepage_url": "https://github.com/farblos/copy-on-select-2",
+
   "version": "2.4",
 
   "icons": {

@@ -5,14 +5,17 @@ var CopyOnSelect = {
   // options
   in_input_elements: false,
 
-  async copy( selection )
+  async copy( s )
   {
     try {
-      await navigator.clipboard.writeText( selection.toString() );
+      // carefully try the modern approach to write to the
+      // clipboard ...
+      await navigator.clipboard.writeText( s );
     }
     catch ( e ) {
-      // fall back to deprecated document.execCommand, hoping it
-      // will pick the right selection
+      // ... but fall back to deprecated document.execCommand if
+      // that fails, hoping it will pick the right selection.
+      // This fall-back is required at least for http pages.
       document.execCommand( "copy" );
     }
   },
@@ -24,19 +27,26 @@ var CopyOnSelect = {
       return;
 
     // ignore events too crooked to be handled by a normal event
-    // handler (as used, for example, on docs.google.com)
+    // handler
     if ( e.defaultPrevented )
       return;
 
+    // ignore events on some sites
+    if ( (new URL( document.URL )).hostname === "docs.google.com" )
+      return;
+
+    let s = document.getSelection().toString();
     let t = e.target;
 
     // alignment no-op
     if ( false )
       ;
 
-    // copy selection on web page
-    else if ( (document.getSelection().type === "Range") )
-      this.copy( document.getSelection() );
+    // copy selection on web page.  Do not try to optimize that
+    // in terms of selection.type === "Range", as that may result
+    // in false positives that nix out the clipboard, then.
+    else if ( (s.length > 0) )
+      this.copy( s );
 
     // copy selection on input element
     else if ( (this.in_input_elements) &&
@@ -62,8 +72,8 @@ var CopyOnSelect = {
       }
     );
 
-    // add event handlers on a target as close as possible
-    // to the contents
+    // add event handler on a target as close as possible to the
+    // contents
     let t = document.body || document || window;
     t.addEventListener( "mouseup", this, false );
   }

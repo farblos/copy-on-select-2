@@ -17,7 +17,7 @@ function save( e )
 document.addEventListener(
   "DOMContentLoaded",
   load,
-  { "once": true }
+  { once: true }
 );
 
 document.addEventListener(

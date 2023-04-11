@@ -66,12 +66,12 @@ Version 2.4
 
 - Implements RFE [Enable copy-on-select for input fields][issue_6].
 
-  Provides on option to enable this.
+  Provides an option to control this feature.
 
 - Uses non-deprecated APIs to write to the clipboard.
 
   Requires an additional permission to implement this ("Input
-  data to the clipboard")
+  data to the clipboard").
 
 [issue_6]: https://github.com/farblos/copy-on-select-2/issues/6
 
