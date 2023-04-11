@@ -13,15 +13,16 @@ late
 See the [version history](#version-history) below for information
 on what has changed since the fork.
 
-The strength of both add-ons is their extreme simplicity (10
-lines of code only!): Whenever you raise a mouse button, the
-current selection, if any, is copied to the clipboard.  As you
-might have guessed, that simplicity comes at a cost: This add-on
-works reliably only in the most basic scenario, namely when
-copying text from a web page.
+Up to version 2.4 both add-ons shared a refreshing simplicity (10
+lines of code only in the original add-on!).  Starting with
+version 2.4, this fork began to grow to cover more use cases.
+But still the original principle has not changed: Whenever you
+raise a mouse button, the current selection, if any, is copied to
+the clipboard.
 
-Here are some cases which are difficult or outright impossible to
-handle for this add-on:
+This works in many cases, but not always.  Here are some cases
+which are difficult or outright impossible to handle for this
+add-on:
 
 - Technically impossible:
 
@@ -31,15 +32,12 @@ handle for this add-on:
   Special Firefox pages (`about:*`, `view-source:*`), XML
   documents
 
-- Technically possible but with questionable use, hence not
-  implemented:
-
-  Input elements on web pages
+  Disabled input elements of a web page
 
 - Probably possible, probably not:
 
   JavaScript-heavy web pages, in particular if they do funny
-  things with the selection (https://docs.google.com).
+  things with the selection (https://docs.google.com)
 
 Please consider opening an issue on the [support
 site](https://github.com/farblos/copy-on-select-2/issues) if you
@@ -63,6 +61,19 @@ is
   -->
 
 ## Version History
+
+Version 2.4
+
+- Implements RFE [Enable copy-on-select for input fields][issue_6].
+
+  Provides an option to control this feature.
+
+- Uses non-deprecated APIs to write to the clipboard.
+
+  Requires an additional permission to implement this ("Input
+  data to the clipboard").
+
+[issue_6]: https://github.com/farblos/copy-on-select-2/issues/6
 
 Version 2.3
 
