@@ -58,6 +58,10 @@ var CopyOnSelect = {
       this.copy( t.value.substring( t.selectionStart, t.selectionEnd ) );
   },
 
+  sleep( ms ) {
+    return new Promise( ( resolve ) => { setTimeout( resolve, ms ); } );
+  },
+
   async initialize()
   {
     // initialize options from storage ...
@@ -71,6 +75,8 @@ var CopyOnSelect = {
           this.in_input_elements = c.in_input_elements.newValue;
       }
     );
+
+    await this.sleep( 50 );
 
     // add event handler on a target as close as possible to the
     // contents
