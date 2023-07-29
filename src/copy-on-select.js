@@ -58,15 +58,43 @@ var CopyOnSelect = {
       this.copy( t.value.substring( t.selectionStart, t.selectionEnd ) );
   },
 
-  sleep( ms ) {
-    return new Promise( ( resolve ) => { setTimeout( resolve, ms ); } );
+  // sets up a capturing event handler on the window
+  setupCapturing() {
+    window.addEventListener( "mouseup", this, true );
+  },
+
+  target: null,
+
+  observer: null,
+
+  // sets up a bubbling event handler on some element as close to
+  // the document contents as possible.  Uses an observer to keep
+  // track of changes in the document and its element.
+  setupBubbling() {
+    try {
+      this.target.removeEventListener( "mouseup", this, false );
+    }
+    catch {}
+    this.target = document.body ||
+                  document.documentElement ||
+                  document ||
+                  window;
+    this.target.addEventListener( "mouseup", this, false );
+
+    try {
+      this.observer.disconnect();
+    }
+    catch {}
+    this.observer.observe( document, { childList: true } );
+    if ( document.documentElement )
+      this.observer.observe( document.documentElement, { childList: true } );
   },
 
   async initialize()
   {
     // initialize options from storage ...
-    let o = await browser.storage.local.get();
-    this.in_input_elements = o.in_input_elements;
+    let os = await browser.storage.local.get();
+    this.in_input_elements = os.in_input_elements;
 
     // ... and stay up-to-date on storage changes
     browser.storage.onChanged.addListener(
@@ -76,12 +104,28 @@ var CopyOnSelect = {
       }
     );
 
-    await this.sleep( 50 );
-
-    // add event handler on a target as close as possible to the
-    // contents
-    let t = document.body || document || window;
-    t.addEventListener( "mouseup", this, false );
+    // set up a bubbling event handler and an observer, using the
+    // setup function also as (bound) observer function.
+    //
+    // We have considered using a capturing event handler but
+    // decided against it since:
+    //
+    // - the current bubbling model seems to work fine and
+    //
+    // - it may have benefits to be the last one to see the
+    //   selection - maybe something else has been set up to
+    //   modify it to the user's needs.
+    //
+    // However, using a capturing event handler results in much
+    // simpler code (see the otherwise unused function
+    // setupCapturing).  And according to this [1] discussion no
+    // problems are to be expected by using the capturing model.
+    // Probably we switch when there is some critical user mass
+    // that is willing to file issues on GitHub.
+    //
+    // 1: https://discourse.mozilla.org/t/121436
+    this.observer = new MutationObserver( this.setupBubbling.bind( this ) );
+    this.setupBubbling();
   }
 
 };
