@@ -62,6 +62,14 @@ is
 
 ## Version History
 
+Version 2.5
+
+- Fixes issue [Does not work on local web pages in htmlz format][issue_8].
+
+  Tracks document changes to properly update event handlers.
+
+[issue_8]: https://github.com/farblos/copy-on-select-2/issues/8
+
 Version 2.4
 
 - Implements RFE [Enable copy-on-select for input fields][issue_6].
