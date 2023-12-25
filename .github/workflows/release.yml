@@ -31,9 +31,6 @@ jobs:
 
       - name: Determine Some Strings from Tag
         run: |
-          # (incomplete)
-          ls -alR
-
           # determine tag name
           tagname="${{ github.ref_name }}"
 
@@ -113,6 +110,8 @@ jobs:
         env:
           CRX_PEM: ${{ secrets.CRX_PEM }}
         run: |
+          sudo apt-get install python3-googleapi
+          sudo apt-get install python3-protobuf
           mkdir -p build tmp
           jq '.manifest_version = 3' src/manifest.json > tmp/manifest.json
           mv tmp/manifest.json src/manifest.json
