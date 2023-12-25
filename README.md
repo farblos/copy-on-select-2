@@ -62,6 +62,15 @@ is
 
 ## Version History
 
+Version 2.6
+
+- Implements RFE [Version for chromium web browsers][issue_10].
+
+  Polyfills missing APIs.  Adds release steps to create an MV3,
+  CRX3 package (while leaving MV2 for the Firefox XPI).
+
+[issue_10]: https://github.com/farblos/copy-on-select-2/issues/10
+
 Version 2.5
 
 - Fixes issue [Does not work on local web pages in htmlz format][issue_8].
