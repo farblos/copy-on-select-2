@@ -92,6 +92,11 @@ var CopyOnSelect = {
 
   async initialize()
   {
+    // polyfill the "browser" global for chrome compatibility
+    if ( (typeof globalThis.browser === "undefined") &&
+         (typeof globalThis.chrome  !== "undefined") )
+      globalThis.browser = chrome;
+
     // initialize options from storage ...
     let os = await browser.storage.local.get();
     this.in_input_elements = os.in_input_elements;

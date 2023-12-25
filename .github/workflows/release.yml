@@ -21,10 +21,19 @@ jobs:
     steps:
 
       - name: Check Out Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Check Out CRX3-Creator
+        uses: actions/checkout@v4
+        with:
+          repository: 'farblos/CRX3-Creator'
+          path: 'crx3-creator'
 
       - name: Determine Some Strings from Tag
         run: |
+          # (incomplete)
+          ls -alR
+
           # determine tag name
           tagname="${{ github.ref_name }}"
 
@@ -35,16 +44,19 @@ jobs:
           fi
 
           # determine v-prefixed version, simple version,
-          # extension version, XPI base name and export them
+          # extension version, XPI base name, CRX base name and
+          # export them
           vversion=$tagname
           sversion=${tagname#v}
           [[ $tagname =~ ^v(2\.[0-9]+)(\.[0-9]+)?$ ]]
           xversion=${BASH_REMATCH[1]}
           xpibname="copy-on-select-2-unsigned-$sversion.xpi"
+          crxbname="copy-on-select-2-$sversion.crx"
           echo "vversion=$vversion" >> $GITHUB_ENV
           echo "sversion=$sversion" >> $GITHUB_ENV
           echo "xversion=$xversion" >> $GITHUB_ENV
           echo "xpibname=$xpibname" >> $GITHUB_ENV
+          echo "crxbname=$crxbname" >> $GITHUB_ENV
 
         # ensure the new version is maintained in the extension
         # manifest
@@ -97,7 +109,18 @@ jobs:
           mkdir -p build
           zip -jqr "build/$xpibname" src
 
-      - name: Create Release and Upload XPI
+      - name: Create CRX
+        env:
+          CRX_PEM: ${{ secrets.CRX_PEM }}
+        run: |
+          mkdir -p build tmp
+          jq '.manifest_version = 3' src/manifest.json > tmp/manifest.json
+          mv tmp/manifest.json src/manifest.json
+          printf '%s\n' "$CRX_PEM" > tmp/crx.pem
+          python3 crx3-creator/main.py -o "build/$crxbname" \
+                                       -pem tmp/crx.pem src
+
+      - name: Create Release and Upload Packages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -111,4 +134,5 @@ jobs:
           gh release create $draft              \
              --title "Version $sversion"        \
              --notes-file tmp/reldesc.md        \
-             "$vversion" "build/$xpibname"
+             "$vversion" "build/$xpibname"      \
+                         "build/$crxbname"
