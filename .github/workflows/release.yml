@@ -26,8 +26,15 @@ jobs:
       - name: Check Out CRX3-Creator
         uses: actions/checkout@v4
         with:
-          repository: 'farblos/CRX3-Creator'
+          repository: ${{ format( '{0}/CRX3-Creator', github.repository_owner ) }}
+          ref: 'a5d25b6ccc2007be41bd9cc534dfa51a52692780'
           path: 'crx3-creator'
+
+      - name: Install Additional Software
+        run: |
+          # required for CRX3-Creator
+          sudo apt-get install python3-googleapi
+          sudo apt-get install python3-protobuf
 
       - name: Determine Some Strings from Tag
         run: |
@@ -60,8 +67,13 @@ jobs:
       - name: Verify Manifest
         run: |
           mversion=$( jq -r '.version' src/manifest.json )
-          if [[ $xversion != $mversion ]]; then
+          if [[ $xversion != "$mversion" ]]; then
             echo "Cannot find version \"$xversion\" in manifest." 1>&2
+            exit 1
+          fi
+          mfversion=$( jq -r '.manifest_version' src/manifest.json )
+          if [[ $mfversion != 2 ]]; then
+            echo "Cannot process manifest version $mfversion." 1>&2
             exit 1
           fi
 
@@ -110,8 +122,6 @@ jobs:
         env:
           CRX_PEM: ${{ secrets.CRX_PEM }}
         run: |
-          sudo apt-get install python3-googleapi
-          sudo apt-get install python3-protobuf
           mkdir -p build tmp
           jq '.manifest_version = 3' src/manifest.json > tmp/manifest.json
           mv tmp/manifest.json src/manifest.json
@@ -124,7 +134,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           draft=""
-          if [[ $sversion != $xversion ]]; then
+          if [[ $sversion != "$xversion" ]]; then
             draft="--draft"
           else
             draft=""
