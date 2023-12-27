@@ -1,5 +1,10 @@
 "use strict";
 
+// polyfill the "browser" global for chromium compatibility
+if ( (typeof globalThis.browser === "undefined") &&
+     (typeof globalThis.chrome  !== "undefined") )
+  globalThis.browser = chrome;
+
 var CopyOnSelect = {
 
   // options
@@ -48,7 +53,12 @@ var CopyOnSelect = {
     else if ( (s.length > 0) )
       this.copy( s );
 
-    // copy selection on input element
+    // copy selection on input element.  Chromium-based browsers
+    // do not handle selections in input elements differently
+    // from regular selections.  Accordingly, on these browsers
+    // we do not reach this branch when text from an input
+    // element is selected, and user option "in_input_elements"
+    // is not effective.
     else if ( (this.in_input_elements) &&
               (t === document.activeElement) &&
               (typeof t.value          === "string") &&

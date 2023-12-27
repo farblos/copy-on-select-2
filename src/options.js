@@ -1,5 +1,10 @@
 "use strict";
 
+// polyfill the "browser" global for chromium compatibility
+if ( (typeof globalThis.browser === "undefined") &&
+     (typeof globalThis.chrome  !== "undefined") )
+  globalThis.browser = chrome;
+
 async function load()
 {
   let o = await browser.storage.local.get();

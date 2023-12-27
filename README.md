@@ -55,12 +55,41 @@ is
 
   [![Firefox Latest](https://img.shields.io/amo/v/copy-on-select-2)][link-amo]
 
+- Chromium-based browsers (Brave, Ungoogled Chromium)
+
+  Download the latest CRX package from the [release
+  page](https://github.com/farblos/copy-on-select-2/releases) and
+  drag-and-drop it onto your browser or open it as a file with
+  `Ctrl+O`.
+
+## Known Issues
+
+Version 2.6
+
+- Option "Copy-on-select in input elements" is not effective on
+  chromium-based browsers.  In the sense that on these you cannot
+  *disable* copy-on-select in input elements.
+
+  The same is true for non-standard input fields on all browsers,
+  see ["pontoon.mozilla.org" input form problem][issue_12].
+
+[issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
+
 <!--
   == Keep GitHub workflow release.yml in sync with the format of
   == the section below.
   -->
 
 ## Version History
+
+Version 2.6
+
+- Implements RFE [Version for chromium web browsers][issue_10].
+
+  Polyfills missing APIs.  Adds release steps to create an MV3,
+  CRX3 package (while leaving MV2 for the Firefox XPI).
+
+[issue_10]: https://github.com/farblos/copy-on-select-2/issues/10
 
 Version 2.5
 
