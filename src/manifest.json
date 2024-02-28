@@ -1,12 +1,37 @@
+// manifest.json - copy-on-select-2 manifest.
+//
+// Copyright (C) 2022-2024 Jens Schmidt
+// Copyright (C) 2016 Bennett Roesch
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+//
+// This Source Code Form is “Incompatible With Secondary Licenses”, as
+// defined by the Mozilla Public License, v. 2.0.
+
 {
   "name": "Copy On Select 2",
   "description": "A productivity tool which copies selected text to the clipboard automatically.",
   "homepage_url": "https://github.com/farblos/copy-on-select-2",
 
-  "version": "2.6",
+  "version": "2.6.1",
 
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{dd97d42c-6560-4fb2-8db4-bf340824fde0}",
+      "strict_min_version": "78.0"
+    }
+  },
+
+  // provide icons for installation from package.  For
+  // installation from AMO, FF uses the AMO-provided icons
+  // (which are, incidentially, exactly the icons listed
+  // below).
   "icons": {
-    "128": "copy-on-select-128.png"
+    "32":  "copy-on-select-2-32.png",
+    "64":  "copy-on-select-2-64.png",
+    "128": "copy-on-select-2-128.png"
   },
 
   "permissions": [
@@ -23,7 +48,7 @@
         "copy-on-select.js"
       ],
       "all_frames": true,
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
   ],
 
