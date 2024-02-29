@@ -1,4 +1,13 @@
-[link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
+<!-- README.md - copy-on-select-2 readme.
+  ==
+  == Copyright (C) 2022-2024 Jens Schmidt
+  ==
+  == This Source Code Form is subject to the terms of the Mozilla Public
+  == License, v. 2.0. If a copy of the MPL was not distributed with this
+  == file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ==
+  == This Source Code Form is “Incompatible With Secondary Licenses”, as
+  == defined by the Mozilla Public License, v. 2.0. -->
 
 # Copy on Select 2 - A Productivity Tool Which Copies Selected Text to the Clipboard Automatically
 
@@ -61,6 +70,8 @@ is
   page](https://github.com/farblos/copy-on-select-2/releases) and
   drag-and-drop it onto your browser or open it as a file with
   `Ctrl+O`.
+
+[link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
 
 ## Known Issues
 
