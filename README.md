@@ -11,6 +11,31 @@
 
 # Copy on Select 2 - A Productivity Tool Which Copies Selected Text to the Clipboard Automatically
 
+## Migrating to SourceHut
+
+This repository is currently being migrated to
+[SourceHut](https://sr.ht/~jschmidt/copy-on-select-2):
+
+- Please continue to open new issues on GitHub
+  ([here](https://github.com/farblos/copy-on-select-2/issues)).  
+  This might change eventually.
+
+- Post questions on SourceHut (no registration required!)
+  ([here](https://lists.sr.ht/~jschmidt/copy-on-select-2)).
+
+- New commits will be pushed to SourceHut only
+  ([here](https://git.sr.ht/~jschmidt/copy-on-select-2/tree)).  
+  This might change eventually.
+
+- New releases will be available on SourceHut only
+  ([here](https://git.sr.ht/~jschmidt/copy-on-select-2/refs)).
+
+- All my commits will be authored and commited under my real
+  world name and signed with my public key
+  ([here](https://meta.sr.ht/~jschmidt.pgp)).
+
+## Copy on Select 2
+
 Are you used to being able to highlight text and have it
 instantly copied to the clipboard?  Why not have this
 functionality in your browser as well?
