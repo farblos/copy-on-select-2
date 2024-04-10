@@ -3,13 +3,19 @@
 <!-- copy-on-select-2.svg - copy-on-select-2 icon.
   ==
   == Copyright (C) 2024 Jens Schmidt
+  == Copyright (C) 2016 Bennett Roesch
   ==
   == This Source Code Form is subject to the terms of the Mozilla Public
   == License, v. 2.0. If a copy of the MPL was not distributed with this
   == file, You can obtain one at https://mozilla.org/MPL/2.0/.
   ==
   == This Source Code Form is “Incompatible With Secondary Licenses”, as
-  == defined by the Mozilla Public License, v. 2.0. -->
+  == defined by the Mozilla Public License, v. 2.0.
+  ==
+  == SPDX-FileCopyrightText: 2024 Jens Schmidt
+  == SPDX-FileCopyrightText: 2016 Bennett Roesch
+  ==
+  == SPDX-License-Identifier: MPL-2.0-no-copyleft-exception -->
 
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"

@@ -2,12 +2,17 @@
 #
 # Copyright (C) 2023-2024 Jens Schmidt
 #
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# This is free and unencumbered software released into the public
+# domain.
 #
-# This Source Code Form is “Incompatible With Secondary Licenses”, as
-# defined by the Mozilla Public License, v. 2.0.
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a
+# compiled binary, for any purpose, commercial or non-commercial,
+# and by any means.
+#
+# SPDX-FileCopyrightText: 2023-2024 Jens Schmidt
+#
+# SPDX-License-Identifier: Unlicense
 
 name: Release WebExtension
 
