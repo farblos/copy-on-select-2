@@ -6,8 +6,9 @@
   == License, v. 2.0. If a copy of the MPL was not distributed with this
   == file, You can obtain one at https://mozilla.org/MPL/2.0/.
   ==
-  == This Source Code Form is “Incompatible With Secondary Licenses”, as
-  == defined by the Mozilla Public License, v. 2.0. -->
+  == SPDX-FileCopyrightText: 2022-2024 Jens Schmidt
+  ==
+  == SPDX-License-Identifier: MPL-2.0 -->
 
 # Copy on Select 2 - A Productivity Tool Which Copies Selected Text to the Clipboard Automatically
 
