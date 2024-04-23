@@ -1,0 +1,57 @@
+# .build.yml - SourceHut build workflow for copy-on-select-2.
+#
+# Copyright (C) 2024 Jens Schmidt
+#
+# This file is free and unencumbered software released into the
+# public domain.
+#
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this file, either in source code form or as a
+# compiled binary, for any purpose, commercial or non-commercial,
+# and by any means.
+#
+# For more information, please refer to <http://unlicense.org/>.
+#
+# SPDX-FileCopyrightText: 2024 Jens Schmidt
+#
+# SPDX-License-Identifier: Unlicense
+
+image: debian/testing
+packages:
+  - cairosvg
+  - fonts-urw-base35
+  - jq
+  - python3-cryptography
+  - python3-markdown2
+  - reuse
+  - xsltproc
+
+sources:
+  - https://git.sr.ht/~jschmidt/copy-on-select-2
+
+secrets:
+  # farblos-crx3.pem
+  - 8fdcea33-86bd-4ecc-9d4d-3a32b979b3c3
+  # farblos-amo.jwt-issuer
+  - 67958885-6232-495a-9549-260f13031a15
+  # farblos-amo.jwt-secret
+  - c3903a5e-aef5-4cb6-9b11-bb3a38d738c7
+
+oauth:
+  git.sr.ht/OBJECTS:RW
+  git.sr.ht/PROFILE:RO
+  git.sr.ht/REPOSITORIES:RO
+  meta.sr.ht/PROFILE:RO
+
+tasks:
+  - make: |
+      # if this is a push of a release tag, then determine release
+      # mode and version from the tag and convey that information
+      # to the build script
+      if   [[ ${GIT_REF-} =~ ^refs/tags/v2\.[1-9][0-9]*$ ]]; then
+        cd copy-on-select-2 &&
+        ./make publish "${GIT_REF#refs/tags/v}"
+      elif [[ ${GIT_REF-} =~ ^refs/tags/v2\.[1-9][0-9]*\.[1-9][0-9]*$ ]]; then
+        cd copy-on-select-2 &&
+        ./make build-test publish "${GIT_REF#refs/tags/v}"
+      fi

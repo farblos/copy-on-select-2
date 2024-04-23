@@ -15,12 +15,14 @@
 //
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 
+// Keep exactly one completely empty line between above license
+// header and this comment, it is required by the build script!
 {
   "name": "Copy On Select 2",
-  "description": "A productivity tool which copies selected text to the clipboard automatically.",
-  "homepage_url": "https://github.com/farblos/copy-on-select-2",
+  "description": "A productivity tool which copies selected text to the clipboard automatically",
+  "homepage_url": "https://sr.ht/~jschmidt/copy-on-select-2",
 
-  "version": "2.6.1",
+  "version": "2.6",
 
   "browser_specific_settings": {
     "gecko": {

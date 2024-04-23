@@ -148,7 +148,7 @@ let CopyOnSelect = {
     // setupCapturing).  And according to this [1] discussion no
     // problems are to be expected by using the capturing model.
     // Probably we switch when there is some critical user mass
-    // that is willing to file issues on GitHub.
+    // that is willing to report issues.
     //
     // 1: https://discourse.mozilla.org/t/121436
     this.observer = new MutationObserver( this.setupBubbling.bind( this ) );

@@ -12,9 +12,9 @@
 
 # Copy on Select 2 - A Productivity Tool Which Copies Selected Text to the Clipboard Automatically
 
-Are you used to being able to highlight text and have it
+"Are you used to being able to highlight text and have it
 instantly copied to the clipboard?  Why not have this
-functionality in your browser as well?
+functionality in your browser as well?" -- spyrosoft
 
 This is a fork of
 https://addons.mozilla.org/en-US/firefox/addon/copy-on-select by
@@ -50,7 +50,9 @@ add-on:
   things with the selection (https://docs.google.com)
 
 Please consider opening an issue on the [support
-site](https://github.com/farblos/copy-on-select-2/issues) if you
+site](https://github.com/farblos/copy-on-select-2/issues) or send
+a mail to the [support
+email](mailto:~jschmidt/copy-on-select-2@lists.sr.ht) if you
 experience a web page where this add-on does not copy-on-select.
 
 Much more feature-complete, probably even feature-bloated, is
@@ -68,9 +70,9 @@ is
 - Chromium-based browsers (Brave, Ungoogled Chromium)
 
   Download the latest CRX package from the [release
-  page](https://github.com/farblos/copy-on-select-2/releases) and
-  drag-and-drop it onto your browser or open it as a file with
-  `Ctrl+O`.
+  page](https://git.sr.ht/~jschmidt/copy-on-select-2/refs)
+  (select the link on the version number!) and drag-and-drop it
+  onto your browser or open it as a file with `Ctrl+O`.
 
 [link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
 
@@ -87,9 +89,38 @@ Version 2.6
 
 [issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
 
+## Low-Dependency Build Script
+
+(This section is about how this add-on is built, and as a regular
+user you can blissfully ignore it.)
+
+I feature a slight paranoia against all these fancy GitHub
+actions and other build dependencies, in particular if they
+involve processing JWTs or other sensitive data of mine.  And I
+actually like the challenge of reinventing wheels with low-level
+tools.  There are definitely cons to that approach, but also
+pros, given the infamous [left-pad
+incident](https://en.wikipedia.org/wiki/Npm_left-pad_incident) or
+the even more infamous [XZ Utils
+backdoor](https://en.wikipedia.org/wiki/XZ_Utils_backdoor).
+
+For this add-on I developed a single, low-dependency,
+self-contained, monolithic Bash build script that covers the
+complete add-on build and release cycle: From building the add-on
+XPI (and CRX) to uploading it on SourceHut's release page and to
+releasing it on addons.mozilla.org.  As an added benefit, most of
+the build script runs locally just as well as on the SourceHut
+build service, which eases its development and maintenance a lot.
+
+The build script is tailored to this add-on's needs, and not
+configurable at all.  However, the build script is hopefully well
+structured, well documented, and comes with a permissive
+Unlicense, so it should be relatively easy to rip it apart and
+assemble the pieces to what other add-ons need.
+
 <!--
-  == Keep GitHub workflow release.yml in sync with the format of
-  == the section below.
+  == Keep format and position of the section below as expected by
+  == the build script.
   -->
 
 ## Version History
@@ -105,7 +136,7 @@ Version 2.6
 
 Version 2.5
 
-- Fixes issue [Does not work on local web pages in htmlz format][issue_8].
+- Fixes issue [Does not work on local web pages in htmlz format][issue_8]:
 
   Tracks document changes to properly update event handlers.
 
