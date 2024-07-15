@@ -1074,6 +1074,14 @@ for pixels in 32 64 128; do
         "$bdn/crx/${ADDON_SLUG}-$pixels.png"
 done
 
+# ensure reproducible builds and normalize file and directory
+# modification times to the commit time of the current head.  It
+# would have been cleaner to do that in function zipcrx3, but the
+# ZipFile class does not seem to support this easily.
+cts=$( git show --no-patch --format='%ct' HEAD )
+find "$bdn/xpi" -execdir touch -d "@$cts" '{}' +
+find "$bdn/crx" -execdir touch -d "@$cts" '{}' +
+
 # create XPI
 cat /dev/null |
 ( cd "$bdn/xpi" && zipcrx3 ) > "$bdn/$xpibname"
