@@ -78,7 +78,7 @@ for this add-on to copy-on-select:
   documents, XML documents
 
   Disabled input elements of a web page
-  
+
 - Probably possible, probably not:
 
   JavaScript-heavy web pages, in particular if they do funny
