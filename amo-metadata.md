@@ -69,7 +69,7 @@ on SourceHut for information on what has changed since the fork.
 Here are some cases where it is difficult or outright impossible
 for this add-on to copy-on-select:
 
-- Technically impossible:
+- *Technically impossible:*
 
   Firefox user interface elements outside of the main web page
   (URL bar, dialogues, etc.)
@@ -79,7 +79,7 @@ for this add-on to copy-on-select:
 
   Disabled input elements of a web page
 
-- Probably possible, probably not:
+- *Probably possible, probably not:*
 
   JavaScript-heavy web pages, in particular if they do funny
   things with the selection (https://docs.google.com)

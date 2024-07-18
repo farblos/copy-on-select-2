@@ -1,0 +1,76 @@
+<!-- body-change.html - copy-on-select-2 test page.
+  ==
+  == Copyright (C) 2024 Jens Schmidt
+  ==
+  == This Source Code Form is subject to the terms of the Mozilla Public
+  == License, v. 2.0. If a copy of the MPL was not distributed with this
+  == file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ==
+  == SPDX-FileCopyrightText: 2024 Jens Schmidt
+  ==
+  == SPDX-License-Identifier: MPL-2.0 -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <title>Copy on Select 2 Test</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../sourcehut-pages/content/styles.css"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="copy-on-select-2-16.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="copy-on-select-2-32.png"/>
+  <link rel="icon" type="image/png" sizes="48x48" href="copy-on-select-2-48.png"/>
+  <script>
+    function delay( f ) {
+      let i = 0;
+      function delay0() {
+        if ( i++ &lt; 10 )
+          window.requestAnimationFrame( delay0 );
+        else
+          f();
+      }
+      delay0();
+    }
+
+    function replacebody() {
+      let bold = document.body;
+      let bnew = document.createElement( "body" );
+      let c = bold.children;
+      while ( c.length > 0 )
+        bnew.appendChild( bold.removeChild( c[0] ) );
+      document.body = bnew;
+    }
+
+    delay( replacebody );
+  </script>
+</head>
+<body>
+  <header class="header">
+    <img id="logo"
+         alt="Copy on Select 2 Add-On Logo"
+         src="copy-on-select-2-notext.svg"/>
+    <div id="title">
+      <h1>Copy on Select 2</h1>
+      <h2>Test</h2>
+    </div>
+  </header>
+
+  <header class="breadcrumb">
+    <p><a href="index.html">main</a> &gt; <a href="tests.html">tests</a></p>
+  </header>
+
+  <main class="twocol">
+    <section class="twocolelt">
+    <h4>Regular Text (PASS)</h4>
+
+    <p>
+    When shall we three meet again<br/>
+    In thunder, lightning, or in rain?
+    </p>
+    </section>
+  </main>
+
+  <footer>
+    <p class="copyright">© 2024 Jens Schmidt</p>
+  </footer>
+</body>
+</html>

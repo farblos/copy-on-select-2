@@ -1,0 +1,235 @@
+<!-- tests.html - copy-on-select-2 test page.
+  ==
+  == Copyright (C) 2024 Jens Schmidt
+  ==
+  == This Source Code Form is subject to the terms of the Mozilla Public
+  == License, v. 2.0. If a copy of the MPL was not distributed with this
+  == file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ==
+  == SPDX-FileCopyrightText: 2024 Jens Schmidt
+  ==
+  == SPDX-License-Identifier: MPL-2.0 -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <title>Copy on Select 2 Tests</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../sourcehut-pages/content/styles.css"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="copy-on-select-2-16.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="copy-on-select-2-32.png"/>
+  <link rel="icon" type="image/png" sizes="48x48" href="copy-on-select-2-48.png"/>
+</head>
+<body>
+  <header class="header">
+    <img id="logo"
+         alt="Copy on Select 2 Add-On Logo"
+         src="copy-on-select-2-notext.svg"/>
+    <div id="title">
+      <h1>Copy on Select 2</h1>
+      <h2>Tests</h2>
+    </div>
+  </header>
+
+  <header class="breadcrumb">
+    <p><a href="index.html">main</a></p>
+  </header>
+
+  <main class="twocol">
+    <section class="onecolelt">
+    <h4>Overview</h4>
+
+    <p>Process the following tests on Firefox Nightly (during
+    add-on development only), on the minimum supported Firefox,
+    on Debian stable's Firefox, and on an up-to-date ungoogled
+    chromium flatpak.</p>
+
+    <ul>
+    <li><p>For Firefox Nightly, start the browser as</p>
+
+    <pre>~/tmp/firefox/firefox -p nightly &amp;</pre>
+
+    <p>Then navigate
+    to <code>about:debugging#/runtime/this-firefox</code> to
+    install this add-on as temporary add-on.  Alternatively, set
+    option <code>xpinstall.signatures.required</code>
+    to <code>false</code> to install this add-on as an unsigned
+    instead of a temporary add-on.</p></li>
+
+    <li><p>For the minimum supported Firefox, start the browser
+    as</p>
+
+    <!-- (sync-mark-min-version) -->
+    <pre>MOZ_FORCE_DISABLE_E10S=1 ~/work/copy-on-select-2/collateral/firefox-78.15.0esr/firefox -p esr-78 &amp;</pre>
+
+    <p>Then open the XPI package to be tested
+    with <code>C-o</code>, open a new tab to perform the tests
+    in, load the test page in that tab, and finally open the
+    add-on page with <code>C-S-a</code>.  When done testing,
+    remove the add-on again.  Any deviation from this procedure
+    may result in the add-on not being activated!</p></li>
+
+    <li><p>For ungoogled chromium, install or update
+    flatpak <code>io.github.ungoogled_software.ungoogled_chromium</code>
+    and run it with</p>
+
+    <pre>flatpak run io.github.ungoogled_software.ungoogled_chromium &lt;crx3-package&gt; &amp;</pre></li>
+    </ul>
+    </section>
+
+    <p class="flexsep"></p>
+
+    <section class="twocolelt">
+    <h4>Monitor Clipboard vs. Primary Selection</h4>
+
+    <p>Execute the following command in a terminal to monitor and
+    compare clipboard and primary selection:</p>
+    <pre>watch -t -n1 \
+      'c=$( xclip -o -se c ) p=$( xclip -o -se p )
+       echo "c: ${#c}"; echo "p: ${#p}"
+       test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Prepare a Local Test File and HTTP Server</h4>
+
+    <p>It is hard to otherwise find HTTP(non-S) servers and
+    copying from HTTP-served pages differs from HTTPS-served
+    pages.</p>
+
+    <pre>cp ~/work/copy-on-select-2/content/simple.html /tmp/simple.html
+while :; do
+  { echo $'HTTP/1.1 200 OK\r\n\r\n'; cat /tmp/simple.html; } |
+  nc -l 8080
+done</pre>
+    </section>
+
+    <p class="flexsep"></p>
+
+    <section class="twocolelt">
+    <h4>Regular Text (PASS)</h4>
+
+    <p>
+    When shall we three meet again<br/>
+    In thunder, lightning, or in rain?
+    </p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Disabled Text Area Text (FAIL)</h4>
+
+    <textarea class="copy"
+              disabled=""
+              rows="2"
+              spellcheck="false">When shall we three meet again
+In thunder, lightning, or in rain?</textarea>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Text Area Text (FAIL)</h4>
+
+    <textarea class="copy"
+              rows="2"
+              spellcheck="false">When shall we three meet again
+In thunder, lightning, or in rain?</textarea>
+    </section>
+
+    <!-- (sync-mark-input-elements) -->
+    <section class="twocolelt">
+    <h4>Text Area Text with Input Element Option (PASS)</h4>
+
+    <p>Switch on the input element option and repeat the
+    previous test.  (<a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/6">GitHub
+    issue 6</a>)</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Text Box Text (FAIL)</h4>
+
+    <input type="text"
+           spellcheck="false"
+           value="When shall we three meet again"/>
+    </section>
+
+    <!-- (sync-mark-input-elements) -->
+    <section class="twocolelt">
+    <h4>Text Box Text with Input Element Option (PASS)</h4>
+
+    <p>Switch on the input element option and repeat the
+    previous test.</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Iframe Text (PASS)</h4>
+
+    <iframe height="80" src="simple.html"></iframe>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Non-Text (FAIL)</h4>
+
+    <p>Select the following image.  That should clear the primary
+    selection, but not the clipboard.</p>
+
+    <!-- For the image to be selectable it must be embedded in a
+      == surrounding paragraph.  And to let the test fail, its
+      == alternative text must be empty, or otherwise the
+      == alternative text gets copied-on-select.  -->
+    <p><img width="64" height="64" alt=""
+            src="copy-on-select-2-notext.svg"/></p>
+    </section>
+
+    <p class="flexsep"></p>
+
+    <section class="twocolelt">
+    <h4>Tests Requiring Separate Pages</h4>
+
+    <p>We probably could have implemented these as iframes, but
+    decided to keep things simple here.</p>
+
+    <ul>
+    <li><p><a href="cancel-event.html">cancel-event</a>: Install
+    a bubbling event handler on <code>window.document</code> that
+    stops propagation of all <code>mouseup</code> events.
+    (<a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/4">GitHub
+    issue 4</a>)</p></li>
+
+    <li><p><a href="body-change.html">body-change</a>: Replace
+    the document's body element in a delayed manner.
+    (<a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/8">GitHub
+    issue 8</a>)</p></li>
+    </ul>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Tests Requiring External Pages</h4>
+
+    <ul>
+    <li><p>Copy text from <a target="_blank"
+    href="file:///tmp/simple.html">a local test file</a>.
+    (PASS)</p></li>
+
+    <li><p>Copy text from <a target="_blank"
+    href="http://localhost:8080/">an HTTP-served page</a>.
+    (PASS)</p></li>
+
+    <li><p>Login to <a target="_blank"
+    href="https://docs.google.com">https://docs.google.com</a>,
+    select the hamburger menu, select spreadsheets.  Ensure that
+    copy (<code>C-c</code>) and paste (<code>C-v</code>) work in
+    cells.  Remove the test spreadsheet when done.
+    (<a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/1">GitHub
+    issue 1</a>)</p></li>
+    </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p class="copyright">© 2024 Jens Schmidt</p>
+  </footer>
+</body>
+</html>

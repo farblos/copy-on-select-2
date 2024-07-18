@@ -28,34 +28,10 @@ lines of code only in the original add-on!).  Starting with
 version 2.4, this fork began to grow to cover more use cases.
 But still the original principle has not changed: Whenever you
 raise a mouse button, the current selection, if any, is copied to
-the clipboard.
+the clipboard.  This works in many cases, but [not
+always](#restrictions).
 
-This works in many cases, but not always.  Here are some cases
-which are difficult or outright impossible to handle for this
-add-on:
-
-- Technically impossible:
-
-  Firefox user interface elements outside of the main web page
-  (URL bar, dialogues, etc.)
-
-  Special Firefox pages (`about:*`, `view-source:*`), XML
-  documents
-
-  Disabled input elements of a web page
-
-- Probably possible, probably not:
-
-  JavaScript-heavy web pages, in particular if they do funny
-  things with the selection (https://docs.google.com)
-
-Please consider opening an issue on the [support
-site](https://github.com/farblos/copy-on-select-2/issues) or send
-a mail to the [support
-email](mailto:~jschmidt/copy-on-select-2@lists.sr.ht) if you
-experience a web page where this add-on does not copy-on-select.
-
-Much more feature-complete, probably even feature-bloated, is
+Much more feature-complete, probably even feature-bloated, was
 [AutocopySelection2Clipboard](https://addons.mozilla.org/en-US/firefox/addon/autocopyselection2clipboard),
 but that disappeared from AMO in early 2022.  Another alternative
 is
@@ -63,11 +39,11 @@ is
 
 ## Installation
 
-- [Mozilla Firefox][link-amo]
+- [Mozilla Firefox][link-amo] ("FF")
 
   [![Firefox Latest](https://img.shields.io/amo/v/copy-on-select-2)][link-amo]
 
-- Chromium-based browsers (Brave, Ungoogled Chromium)
+- Chromium-based browsers (Brave, Ungoogled Chromium) ("cbb")
 
   Download the latest CRX package from the [release
   page](https://git.sr.ht/~jschmidt/copy-on-select-2/refs)
@@ -75,6 +51,67 @@ is
   onto your browser or open it as a file with `Ctrl+O`.
 
 [link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
+
+## Restrictions
+
+Here are some cases where it is difficult or outright impossible
+for this add-on to copy-on-select:
+
+- *Technically impossible:*
+
+  Firefox user interface elements outside of the main web page
+  (URL bar, dialogues, etc.)
+
+  Special Firefox pages (`about:*`, `view-source:*`), PDF
+  documents, XML documents
+
+  Disabled input elements of a web page
+
+- *Probably possible, probably not:*
+
+  JavaScript-heavy web pages, in particular if they do funny
+  things with the selection (https://docs.google.com)
+
+  Likewise web pages that rely on JavaScript libraries like
+  CodeMirror for text input
+
+- *Configurable:*
+
+  Some pages are restricted by [optional
+  permissions](#required-and-optional-permissions), which you can
+  grant in the add-on manager of your browser
+
+Please consider opening an issue on the [support
+site](https://github.com/farblos/copy-on-select-2/issues) or send
+a mail to the support email, available on the [Firefox Add-On
+Listing][link-amo], if you experience a web page where this
+add-on does not copy-on-select.
+
+[link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
+
+## Required and Optional Permissions
+
+On Mozilla Firefox this add-on requires the following permissions
+to work:
+
+- [Access your data for all websites](https://support.mozilla.org/en-US/kb/permission-request-messages-firefox-extensions#w_access-your-data-for-all-websites)
+
+  This permission is required to read your selection ...
+
+- [Input data to the clipboard](https://support.mozilla.org/en-US/kb/permission-request-messages-firefox-extensions#w_input-data-to-the-clipboard)
+
+  ... and this one to automatically put the selection into your
+  clipboard.
+
+In addition to the required permissions above, there are some
+optional permissions which you can grant in the add-on manager of
+your browser to extend the scope of this add-on:
+
+- (FF) "Run in Private Windows", (cbb) "Allow in Incognito"
+
+- (cbb) "Allow access to file URLs"
+
+- (FF) "Run on sites with restrictions"
 
 ## Known Issues
 

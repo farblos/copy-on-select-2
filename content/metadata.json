@@ -1,0 +1,54 @@
+// metadata.json - copy-on-select-2 content metadata.
+//
+// Copyright (C) 2024 Jens Schmidt
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+//
+// SPDX-FileCopyrightText: 2024 Jens Schmidt
+//
+// SPDX-License-Identifier: MPL-2.0
+
+// Any tabs in this file get replaced by blanks during
+// processing.
+{
+  "slug": "copy-on-select-2",
+
+  "name": "Copy on Select 2",
+
+  // (sync-mark-toc)
+  "toc": [
+    { "file": "onboarding.html", "name": "Onboarding Page" },
+    { "file": "tests.html",      "name": "Test Page" }
+  ],
+
+  "content": [
+    { "file": "copy-on-select-2-notext.svg",
+      "eval": [ "cp \"$sdn/../copy-on-select-2-notext.svg\" \"$ofn\"" ] },
+
+    { "file": "copy-on-select-2-16.png",
+      "eval": [ "cairosvg --output-width 16 --output-height 16 --format png",
+                "         \"$sdn/../copy-on-select-2.svg\" -o \"$ofn\"" ] },
+    { "file": "copy-on-select-2-32.png",
+      "eval": [ "cairosvg --output-width 32 --output-height 32 --format png",
+                "         \"$sdn/../copy-on-select-2.svg\" -o \"$ofn\"" ] },
+    { "file": "copy-on-select-2-48.png",
+      "eval": [ "cairosvg --output-width 48 --output-height 48 --format png",
+                "         \"$sdn/../copy-on-select-2.svg\" -o \"$ofn\"" ] },
+
+    // the overall virtual site structure is:
+    //
+    //   index.html
+    //     onboarding.html
+    //     tests.html
+    //       body-change.html
+    //       cancel-event.html
+    { "file": "index.html" },
+    { "file": "onboarding.html" },
+    { "file": "tests.html" },
+    { "file": "body-change.html" },
+    { "file": "cancel-event.html" },
+    { "file": "simple.html" }
+  ]
+}

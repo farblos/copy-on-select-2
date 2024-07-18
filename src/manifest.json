@@ -24,6 +24,7 @@
 
   "version": "2.6",
 
+  // (sync-mark-min-version)
   "browser_specific_settings": {
     "gecko": {
       "id": "{dd97d42c-6560-4fb2-8db4-bf340824fde0}",
@@ -58,6 +59,12 @@
       "run_at": "document_idle"
     }
   ],
+
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
 
   "options_ui": {
     "page": "options.html"

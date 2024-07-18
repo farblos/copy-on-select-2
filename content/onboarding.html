@@ -1,0 +1,129 @@
+<!-- onboarding.html - copy-on-select-2 onboarding page.
+  ==
+  == Copyright (C) 2024 Jens Schmidt
+  ==
+  == This Source Code Form is subject to the terms of the Mozilla Public
+  == License, v. 2.0. If a copy of the MPL was not distributed with this
+  == file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ==
+  == SPDX-FileCopyrightText: 2024 Jens Schmidt
+  ==
+  == SPDX-License-Identifier: MPL-2.0 -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <title>Welcome to Copy on Select 2</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../sourcehut-pages/content/styles.css"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="copy-on-select-2-16.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="copy-on-select-2-32.png"/>
+  <link rel="icon" type="image/png" sizes="48x48" href="copy-on-select-2-48.png"/>
+</head>
+<body>
+  <header class="header">
+    <img id="logo"
+         alt="Copy on Select 2 Add-On Logo"
+         src="copy-on-select-2-notext.svg"/>
+    <div id="title">
+      <h1>Copy on Select 2</h1>
+      <h2>Onboarding Page</h2>
+    </div>
+  </header>
+
+  <header class="breadcrumb">
+    <p><a href="index.html">main</a></p>
+  </header>
+
+  <main class="twocol">
+    <section class="twocolelt">
+    <h4>Use your mouse to select some text below ...</h4>
+
+    <!-- avoid any extra whitespace in the paragraph below!  When
+      == double- or triple-clicking, which is what we are asking
+      == for below, that extra whitespace gets included into the
+      == selection.
+      ==
+      == Do not change the other samples on the test pages in
+      == this manner, however, to keep them readable. -->
+    <p>When shall we three meet again<br/>In thunder, lightning, or in rain?<br/>When the hurlyburly's done,<br/>When the battle's lost and won.</p>
+
+    <p>That is, just select the text and do not
+    press <code>Ctrl+C</code>.  Double- and triple-clicks also
+    copy-on-select.</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>... and paste it into this text box.</h4>
+
+    <textarea class="paste"
+              spellcheck="false"
+              placeholder="paste with Ctrl+V or Command+V"></textarea>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Now try to select text from the box below ...</h4>
+
+    <textarea class="copy"
+              rows="4"
+              spellcheck="false">When shall we three meet again
+In thunder, lightning, or in rain?
+When the hurlyburly's done,
+When the battle's lost and won.</textarea>
+
+    <!-- (sync-mark-input-elements) -->
+    <p>This works only if you check option "Copy-on-select in
+    input elements" in the add-on preferences.</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>... and paste it into this text box.</h4>
+
+    <textarea class="paste"
+              spellcheck="false"
+              placeholder="paste with Ctrl+V or Command+V"></textarea>
+    </section>
+
+    <section class="twocolelt">
+    <h4>But even that option does not help here ...</h4>
+
+    <textarea class="copy"
+              disabled=""
+              rows="4"
+              spellcheck="false">When shall we three meet again
+In thunder, lightning, or in rain?
+When the hurlyburly's done,
+When the battle's lost and won.</textarea>
+
+    <p>... and there is nothing this add-on can do about that or
+    some other special cases.  See <a target="_blank"
+    href="https://sr.ht/~jschmidt/copy-on-select-2#restrictions">the
+    add-on homepage</a> for more information.</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Links</h4>
+
+    <p><a target="_blank"
+    href="https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2">Firefox
+    Add-On Listing</a></p>
+
+    <p><a target="_blank"
+    href="https://sr.ht/~jschmidt/copy-on-select-2">Add-On
+    Homepage</a></p>
+
+    <p><a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues">Support
+    Site</a></p>
+
+    <p><a href="#"
+          data-sm="bWFpbHRvOn5qc2NobWlkdC9jb3B5LW9uLXNlbGVjdC0yQGxpc3RzLnNyLmh0"
+          onmouseover="this.href = atob(this.dataset.sm)">Support Email</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p class="copyright">© 2024 Jens Schmidt</p>
+  </footer>
+</body>
+</html>
