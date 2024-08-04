@@ -967,12 +967,14 @@ fi
 #{{{ target check
 
 # ensure a reasonable Git status before processing a non-draft
-# release
+# release.  On the SourceHut build service, the working tree has
+# a detached head, so do not check the branch name there.
 if [[ ($relmode != "draft") &&
       ($cleanp == 0) ]]; then
   error "Cannot process unclean working tree."
 fi
-if [[ ($relmode == "final") &&
+if [[ ($localp == 1) &&
+      ($relmode == "final") &&
       ($( git rev-parse --abbrev-ref HEAD ) != "main") ]]; then
   error "Cannot process non-main branch."
 fi
