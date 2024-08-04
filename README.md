@@ -162,6 +162,29 @@ assemble the pieces to what other add-ons need.
 
 ## Version History
 
+Version 2.7
+
+**Add-On Changes**
+
+- Provides an onboarding page for add-on installations
+
+- Defines a minimum supported browser version
+
+- Uses new add-on icons
+
+**Infrastructure Changes**:
+
+- Migrates from GitHub to SourceHut as project home.  Adds a
+  low-dependency, fully automated release process for the
+  SourceHut build service, replacing the previous GitHub-based
+  release process.
+
+- Adds an onboarding and test pages served by SourceHut pages
+
+- Uses appropriate licenses according to the Reuse standard
+
+- Better describes restrictions and permissions in the readme
+
 Version 2.6
 
 - Implements RFE [Version for chromium web browsers][issue_10].
