@@ -164,7 +164,7 @@ assemble the pieces to what other add-ons need.
 
 Version 2.7
 
-**Add-On Changes**
+*Add-On Changes*
 
 - Provides an onboarding page for add-on installations
 
@@ -172,7 +172,7 @@ Version 2.7
 
 - Uses new add-on icons
 
-**Infrastructure Changes**:
+*Infrastructure Changes*
 
 - Migrates from GitHub to SourceHut as project home.  Adds a
   low-dependency, fully automated release process for the
@@ -183,7 +183,8 @@ Version 2.7
 
 - Uses appropriate licenses according to the Reuse standard
 
-- Better describes restrictions and permissions in the readme
+- Better describes add-on restrictions and permissions in the
+  readme
 
 Version 2.6
 
