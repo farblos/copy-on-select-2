@@ -42,7 +42,9 @@
     <p>Process the following tests on Firefox Nightly (during
     add-on development only), on the minimum supported Firefox,
     on Debian stable's Firefox, and on an up-to-date ungoogled
-    chromium flatpak.</p>
+    chromium flatpak.  Unless otherwise stated, install the XPI
+    or CRX package with <code>C-o</code> and remove it again when
+    done testing.</p>
 
     <ul>
     <li><p>For Firefox Nightly, start the browser as</p>
@@ -69,11 +71,15 @@
     remove the add-on again.  Any deviation from this procedure
     may result in the add-on not being activated!</p></li>
 
+    <li><p>For Debian stable's Firefox, start the browser as</p>
+
+    <pre>firefox -p unprotected &amp;</pre></li>
+
     <li><p>For ungoogled chromium, install or update
     flatpak <code>io.github.ungoogled_software.ungoogled_chromium</code>
     and run it with</p>
 
-    <pre>flatpak run io.github.ungoogled_software.ungoogled_chromium &lt;crx3-package&gt; &amp;</pre></li>
+    <pre>flatpak run io.github.ungoogled_software.ungoogled_chromium &amp;</pre></li>
     </ul>
     </section>
 
@@ -84,9 +90,10 @@
 
     <p>Execute the following command in a terminal to monitor and
     compare clipboard and primary selection:</p>
-    <pre>watch -t -n1 \
+    <pre>watch -t -n1 -x bash -c \
       'c=$( xclip -o -se c ) p=$( xclip -o -se p )
-       echo "c: ${#c}"; echo "p: ${#p}"
+       echo "c: ${#c} &lt;${c:0:10}&gt;"
+       echo "p: ${#p} &lt;${p:0:10}&gt;"
        test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
     </section>
 
