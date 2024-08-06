@@ -23,12 +23,13 @@
 # ========
 #
 # Usage: make ["build-test"] target ("draft" | version)
-# Targets: check => build|all => dist => tag => upload => publish
+# Targets: check => clean => build|all => dist => tag => upload => publish
 #
 # This script processes the following targets, where later
 # targets generally imply execution of all previous ones:
 #
 #   check    ensures build prerequisites
+#   clean    removes known left-overs
 #   build    creates artifacts (XPI and CRX)
 #   dist     copies them to the local dist directory
 #   tag      creates a lightweight or release tag
@@ -49,7 +50,7 @@
 # release version "2.N.M" based on existing Git tags.  This
 # script processes draft releases locally only:
 #
-#   local: check => build => dist => tag =>        => publish
+#   local: check => clean => build => dist => tag =>        => publish
 #
 # The "tag" target in the above sequence creates a light-weight
 # tag, the "publish" target publishes the release on AMO as an
@@ -72,11 +73,11 @@
 # annotated tag corresponding to the released version.  Like
 # this:
 #
-#   local: check => build => dist => tag
-#             ________________________|
+#   local: check => clean => build => dist => tag
+#             _________________________________|
 #            |
 #            v
-#   sr.ht: check => build =>             => upload => publish
+#   sr.ht: check => clean => build =>             => upload => publish
 #
 # On the SourceHut build service, the "publish" target updates
 # the add-on metadata on AMO and publishes the release as listed
@@ -143,6 +144,16 @@
 #
 # - Function amojwt calculates an AMO JWT from an AMO JWT issuer
 #   and secret.
+#
+# Random Notes
+# ============
+#
+# - This script tries as good as possible to create the XPI and
+#   CRX packages in a reproducible manner.  But at least for
+#   cairosvg it is not clear whether the icon rendering is fully
+#   reproducible: It seems to be when done on one and the same
+#   host, but not when done on different Debian distributions,
+#   for example.
 #
 # Testing This Script
 # ===================
@@ -218,7 +229,7 @@ usage()
   echo "$1" 1>&2
   echo 1>&2
   echo "Usage: make [\"build-test\"] target (\"draft\" | version)" 1>&2
-  echo "Targets: check => build|all => dist => tag => upload => publish" 1>&2
+  echo "Targets: check => clean => build|all => dist => tag => upload => publish" 1>&2
   echo "  (later targets imply execution of all previous ones)" 1>&2
   exit 2
 }
@@ -529,7 +540,7 @@ EOF
 #{{{ md2amohtml
 
 # reads the Markdown on STDIN, converts it to XML, selects all
-# nodes below the specified root node, converts them to HTML
+# nodes matching the specified root XPath, converts them to HTML
 # allowed by AMO ("some HTML allowed"), and writes the latter to
 # STDOUT.
 #
@@ -562,7 +573,7 @@ md2amohtml()
   <xsl:param name="root"/>
   <xsl:param name="wslevel"/>
 
-  <!-- select the specified root node as top-level node -->
+  <!-- select new root nodes -->
   <xsl:template match="/">
     <xsl:apply-templates select="$root">
       <xsl:with-param name="level" select="0"/>
@@ -775,7 +786,11 @@ else:
 EOF
   fi
 
-  python3 "$tdn/zipcrx3.py"
+  # ensure reproducible builds and force a defined timezone on
+  # the python3 interpreter, which has an effect at least on the
+  # conversion from Unix file modification timestamps to zip
+  # archive member timestamps
+  TZ="UTC" python3 "$tdn/zipcrx3.py"
 }
 
 #}}}
@@ -812,7 +827,7 @@ fi
 target=
 if   [[ $# == 0 ]]; then
   usage "No target specified."
-elif [[ $1 =~ ^(check|build|dist|tag|upload|publish)$ ]]; then
+elif [[ $1 =~ ^(check|clean|build|dist|tag|upload|publish)$ ]]; then
   target=$1
   shift 1
 elif [[ $1 == "all" ]]; then
@@ -1022,6 +1037,17 @@ if ! amoextid=$( jq -er '.browser_specific_settings.gecko.id |
 fi
 
 [[ $target == "check" ]] && exit 0
+
+#}}}
+
+#{{{ target clean
+
+rm -f content/*~
+rm -f content/copy-on-select-2-[0-9][0-9].png
+rm -f content/copy-on-select-2-notext.svg
+rm -f src/*~
+
+[[ $target == "clean" ]] && exit 0
 
 #}}}
 
@@ -1338,7 +1364,7 @@ fi
 # is undoable and, hence, must come last in this build script.
 rsp=$( # generate the release description as AMO HTML ...
        if [[ $relmode != "draft" ]]; then
-         md2amohtml //ul 0 < "$tdn/reldesc.md"
+         md2amohtml '/root/node()[position()>1]' 0 < "$tdn/reldesc.md"
        else
          echo -n "Unlisted draft release $version."
        fi |
