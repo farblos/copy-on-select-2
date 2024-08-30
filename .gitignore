@@ -10,8 +10,12 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+# (sync-mark-left-over-files)
 content/copy-on-select-2-[0-9][0-9].png
 content/copy-on-select-2-notext.svg
+src/copy-on-select-2-128.png
+src/copy-on-select-2-32.png
+src/copy-on-select-2-64.png
 
 .secrets
 dist

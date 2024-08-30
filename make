@@ -1042,10 +1042,14 @@ fi
 
 #{{{ target clean
 
+# (sync-mark-left-over-files)
 rm -f content/*~
 rm -f content/copy-on-select-2-[0-9][0-9].png
 rm -f content/copy-on-select-2-notext.svg
 rm -f src/*~
+rm -f src/copy-on-select-2-128.png
+rm -f src/copy-on-select-2-32.png
+rm -f src/copy-on-select-2-64.png
 
 [[ $target == "clean" ]] && exit 0
 
