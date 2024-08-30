@@ -23,7 +23,7 @@
     function delay( f ) {
       let i = 0;
       function delay0() {
-        if ( i++ &lt; 10 )
+        if ( i++ < 10 )
           window.requestAnimationFrame( delay0 );
         else
           f();

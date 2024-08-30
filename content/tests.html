@@ -92,17 +92,17 @@
     compare clipboard and primary selection:</p>
     <pre>watch -t -n1 -x bash -c \
       'c=$( xclip -o -se c ) p=$( xclip -o -se p )
-       echo "c: ${#c} &lt;${c:0:10}&gt;"
-       echo "p: ${#p} &lt;${p:0:10}&gt;"
+       cq=${c@Q}; echo "c: ${#c} ${cq:0:40}"
+       pq=${p@Q}; echo "p: ${#p} ${pq:0:40}"
        test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
     </section>
 
     <section class="twocolelt">
     <h4>Prepare a Local Test File and HTTP Server</h4>
 
-    <p>It is hard to otherwise find HTTP(non-S) servers and
-    copying from HTTP-served pages differs from HTTPS-served
-    pages.</p>
+    <p>It is hard to otherwise find HTTP(non-S) servers and at
+    some time (?) copying from HTTP-served pages has behaved
+    differently than from HTTPS-served pages.</p>
 
     <pre>cp ~/work/copy-on-select-2/content/simple.html /tmp/simple.html
 while :; do
@@ -125,7 +125,8 @@ done</pre>
     <section class="twocolelt">
     <h4>Disabled Text Area Text (FAIL)</h4>
 
-    <textarea class="copy"
+    <textarea id="3a580a1e-5b35-11ef-b557-6b81f8021e2a"
+              class="copy"
               disabled=""
               rows="2"
               spellcheck="false">When shall we three meet again
@@ -135,7 +136,8 @@ In thunder, lightning, or in rain?</textarea>
     <section class="twocolelt">
     <h4>Text Area Text (FAIL)</h4>
 
-    <textarea class="copy"
+    <textarea id="43b446ea-5b35-11ef-aa67-1b5fc220d720"
+              class="copy"
               rows="2"
               spellcheck="false">When shall we three meet again
 In thunder, lightning, or in rain?</textarea>
@@ -154,7 +156,8 @@ In thunder, lightning, or in rain?</textarea>
     <section class="twocolelt">
     <h4>Text Box Text (FAIL)</h4>
 
-    <input type="text"
+    <input id="4dd00330-5b35-11ef-913a-331c876ca8bd"
+           type="text"
            spellcheck="false"
            value="When shall we three meet again"/>
     </section>
@@ -170,7 +173,8 @@ In thunder, lightning, or in rain?</textarea>
     <section class="twocolelt">
     <h4>Iframe Text (PASS)</h4>
 
-    <iframe height="80" sandbox="" src="simple.html"></iframe>
+    <iframe height="80" sandbox="" src="simple.html"
+            style="border: 1px solid black;"></iframe>
     </section>
 
     <section class="twocolelt">
