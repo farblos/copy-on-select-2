@@ -127,6 +127,10 @@
 #   service.  In particular, it transparently handles OAUTH2
 #   tokens and other secrets in both cases.
 #
+# - This script creates a version 2 manifest for the XPI package
+#   and a version 3 manifest for the CRX package.  The sources
+#   provide for an unpacked, temporary version 2 manifest add-on.
+#
 # - This script manages the complete add-on metadata on AMO, like
 #   add-on description, add-on icon, version descriptions,
 #   etc. from files stored in the add-on's Git repository.
@@ -138,10 +142,6 @@
 #   not leak into the build logs while still keeping as much
 #   trace available as possible.  This is implemented by means of
 #   functions pushx, popx, and curlx.
-#
-# - This script creates a version 2 manifest for the XPI package
-#   and a version 3 manifest for the CRX package.  The sources
-#   provide for an unpacked, temporary version 2 manifest add-on.
 #
 # - Function md2amohtml converts Markdown to the restricted AMO
 #   HTML ("some HTML allowed").
@@ -1066,11 +1066,11 @@ rm -f src/copy-on-select-2-64.png
 cp -Rp src "$bdn/xpi"
 cp -Rp src "$bdn/crx"
 
-# for the CRX, create the service worker script from the
-# background scripts by concatenating all these and storing the
-# result using the name of the last background script.  This does
-# not take care about removing former background scripts that
-# otherwise would not be required in the CRX any more.
+# for the CRX create the service worker from the background
+# scripts by concatenating all these and storing the result using
+# the name of the last background script.  This does not take
+# care about removing former background scripts that otherwise
+# would not be required in the CRX any more.
 eval "declare -a bgsns=(
   $( jq -r '.background.scripts[] | @sh' "$tdn/manifest.json" )
 )"
@@ -1078,10 +1078,10 @@ cat "${bgsns[@]/#/src/}" > "$bdn/crx/${bgsns[-1]}"
 
 # modify the add-on manifest as needed:
 #
-# - For draft releases, set the add-on version in the manifest to
+# - For draft releases set the add-on version in the manifest to
 #   the release version we have determined during initialization;
 #
-# - for the CRX, use a version 3 manifest and simplify the
+# - for the CRX use a version 3 manifest and simplify the
 #   background scripts to a service worker.
 #
 # Process license header and comment-free manifest separately

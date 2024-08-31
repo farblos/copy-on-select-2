@@ -33,7 +33,7 @@ copied to the clipboard.
 This works for [all the different ways to select text in
 Firefox](https://support.mozilla.org/kb/mouse-shortcuts-perform-common-tasks#w_selecting-or-editing-text),
 but there are some restrictions.  For example, you cannot
-copy-on-select on the `mozilla.org` page just mentioned in the
+copy-on-select on the `mozilla.org` page just referenced in the
 previous link.  For more information see [section
 Restrictions](#restrictions).
 
@@ -123,7 +123,12 @@ your browser to extend the scope of this add-on:
 
 ## Known Issues
 
-Version 2.6
+In All Versions
+
+- Copy-on-select does not (and cannot) always properly handle
+  multi-range selections, for example, not in input elements.
+
+Since Version 2.6
 
 - Option "Copy-on-select in input elements" is not effective on
   chromium-based browsers.  In the sense that on these you cannot
@@ -134,17 +139,12 @@ Version 2.6
 
 [issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
 
-Version 2.3
+Since Version 2.3
 
 - Copy-on-select does not work if you start a selection and
   release the mouse button for that selection outside of the
   browser window.  The same holds if you start a selection in an
   iframe and release the mouse button outside of the iframe.
-
-All Versions
-
-- Copy-on-select does not (and cannot) always properly copy
-  multi-range selections, for example, not in input elements.
 
 ## Low-Dependency Build Script
 

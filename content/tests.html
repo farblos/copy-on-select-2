@@ -92,8 +92,8 @@
     compare clipboard and primary selection:</p>
     <pre>watch -t -n1 -x bash -c \
       'c=$( xclip -o -se c ) p=$( xclip -o -se p )
-       cq=${c@Q}; echo "c: ${#c} ${cq:0:40}"
-       pq=${p@Q}; echo "p: ${#p} ${pq:0:40}"
+       printf "c:%3d %-74.74s\n" "${#c}" "${c@Q}"
+       printf "p:%3d %-74.74s\n" "${#p}" "${p@Q}"
        test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
     </section>
 
@@ -174,7 +174,7 @@ In thunder, lightning, or in rain?</textarea>
     <h4>Iframe Text (PASS)</h4>
 
     <iframe height="80" sandbox="" src="simple.html"
-            style="border: 1px solid black;"></iframe>
+            style="border: 1px solid gray"></iframe>
     </section>
 
     <section class="twocolelt">
