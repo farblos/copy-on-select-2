@@ -27,9 +27,15 @@ Up to version 2.4 both add-ons shared a refreshing simplicity (10
 lines of code only in the original add-on!).  Starting with
 version 2.4, this fork began to grow to cover more use cases.
 But still the original principle has not changed: Whenever you
-raise a mouse button, the current selection, if any, is copied to
-the clipboard.  This works in many cases, but [not
-always](#restrictions).
+raise the main mouse button, the current selection, if any, is
+copied to the clipboard.
+
+This works for [all the different ways to select text in
+Firefox](https://support.mozilla.org/kb/mouse-shortcuts-perform-common-tasks#w_selecting-or-editing-text),
+but there are some restrictions.  For example, you cannot
+copy-on-select on the `mozilla.org` page just mentioned in the
+previous link.  For more information see [section
+Restrictions](#restrictions).
 
 Much more feature-complete, probably even feature-bloated, was
 [AutocopySelection2Clipboard](https://addons.mozilla.org/en-US/firefox/addon/autocopyselection2clipboard),
@@ -64,6 +70,8 @@ for this add-on to copy-on-select:
 
   Special Firefox pages (`about:*`, `view-source:*`), PDF
   documents, XML documents
+
+  Some pages from `mozilla.org` domains
 
   Disabled input elements of a web page
 
@@ -125,6 +133,18 @@ Version 2.6
   see ["pontoon.mozilla.org" input form problem][issue_12].
 
 [issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
+
+Version 2.3
+
+- Copy-on-select does not work if you start a selection and
+  release the mouse button for that selection outside of the
+  browser window.  The same holds if you start a selection in an
+  iframe and release the mouse button outside of the iframe.
+
+All Versions
+
+- Copy-on-select does not (and cannot) always properly copy
+  multi-range selections, for example, not in input elements.
 
 ## Low-Dependency Build Script
 
