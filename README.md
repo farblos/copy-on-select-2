@@ -121,6 +121,43 @@ your browser to extend the scope of this add-on:
 
 - (FF) "Run on sites with restrictions"
 
+## Experimental Options
+
+The following options control somewhat special features.  Chances
+are that you do not need to worry about these.
+
+<!-- (sync-mark-trim-triple-clicks) -->
+- Trim triple-click paragraph selections
+
+  Triple-clicks in general select the paragraph being clicked on.
+  At least for Firefox the resulting text selection may include
+  leading and trailing whitespace.  If this option is checked,
+  copy-on-select trims such whitespace while copying the
+  selection to the clipboard.
+
+  Cbbs seem to trim such whitespace by default, so on these
+  browsers this option does not have any effect.
+
+<!-- (sync-mark-multi-range-sep) -->
+- Join multi-range selections with ...
+
+  On Firefox you can select multiple text (or other) ranges by
+  holding down the `Control` key during the selection operation.
+  For text ranges Firefox builds the resulting overall selection
+  simply by concatenating the selected ranges, without any
+  separator in between them.  If the separator string given by
+  this option (in [percent encoding][percent_encoding]) is
+  non-empty, copy-on-select uses it as separator between the
+  selected ranges while copying the selection to the clipboard.
+  But only if all selected ranges are actually text ranges.
+
+  Use an empty separator string to disable this feature.
+
+  Cbbs do not provide multi-range selection, so on these browsers
+  this option does not have any effect.
+
+[percent_encoding]: https://en.wikipedia.org/wiki/Percent-encoding
+
 ## Known Issues
 
 In All Versions
@@ -130,12 +167,11 @@ In All Versions
 
 Since Version 2.6
 
-- Option "Copy-on-select in input elements" is not effective on
-  chromium-based browsers.  In the sense that on these you cannot
-  *disable* copy-on-select in input elements.
-
-  The same is true for non-standard input fields on all browsers,
-  see ["pontoon.mozilla.org" input form problem][issue_12].
+<!-- (sync-mark-in-input-elements) -->
+- For some non-standard input fields copy-on-select is always
+  active, regardless of option "Copy-on-select in input
+  elements".  See ["pontoon.mozilla.org" input form
+  problem][issue_12].
 
 [issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
 

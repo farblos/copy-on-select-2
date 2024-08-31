@@ -12,23 +12,37 @@
 
 "use strict";
 
-// polyfill the "browser" global for chromium compatibility
-if ( (typeof globalThis.browser === "undefined") &&
-     (typeof globalThis.chrome  !== "undefined") )
-  globalThis.browser = chrome;
-
 async function load()
 {
-  let o = await browser.storage.local.get();
+  const o = await loadLocalStorage();
 
-  if ( o.in_input_elements )
-    document.getElementById( "in_input_elements" ).checked = true;
+  for ( const [ option, defval ] of Object.entries( OPTIONS ) ) {
+    const value = Object.hasOwn( o, option ) ? o[option] : defval;
+    if ( typeof defval === "boolean" )
+      document.getElementById( option ).checked = value;
+    else
+      document.getElementById( option ).value = value;
+  }
 }
 
-function save( e )
+async function save()
 {
-  if ( e.target.id === "in_input_elements" )
-    browser.storage.local.set( { in_input_elements: e.target.checked } );
+  const oo = await loadLocalStorage();
+  const on = {};
+
+  for ( const [ option, defval ] of Object.entries( OPTIONS ) ) {
+    let value;
+    if ( typeof defval === "boolean" )
+      value = document.getElementById( option ).checked;
+    else
+      value = document.getElementById( option ).value;
+
+    if ( (! Object.hasOwn( oo, option )) || (oo[option] !== value) )
+      on[option] = value;
+  }
+
+  if ( Object.keys( on ).length > 0 )
+    await saveLocalStorage( on );
 }
 
 document.addEventListener(
@@ -37,7 +51,7 @@ document.addEventListener(
   { once: true }
 );
 
-document.addEventListener(
-  "input",
+document.getElementById( "save" ).addEventListener(
+  "click",
   save
 );

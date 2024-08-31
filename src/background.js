@@ -12,14 +12,37 @@
 
 "use strict";
 
-// polyfill the "browser" global for chromium compatibility
-if ( (typeof globalThis.browser === "undefined") &&
-     (typeof globalThis.chrome  !== "undefined") )
-  globalThis.browser = chrome;
+// maintains this add-on's options, possibly upgrades them,
+// hopefully before any other code of this add-on executes
+async function maintainAddOnOptions( details )
+{
+  const oo = await loadLocalStorage();
+  const on = {};
 
-browser.runtime.onInstalled.addListener( async ( { reason, temporary } ) => {
-  if ( temporary ) return;
-  if ( reason !== "install" ) return;
+  for ( const [ option, defval ] of Object.entries( OPTIONS ) )
+    if ( Object.hasOwn( oo, option ) )
+      delete oo[option];
+    else
+      on[option] = defval;
+
+  // default any new options in local storage
+  if ( Object.keys( on ).length > 0 )
+    await saveLocalStorage( on );
+
+  // remove any unknown options from local storage
+  if ( Object.keys( oo ).length > 0 )
+    await cleanLocalStorage( Object.keys( oo ) );
+}
+
+async function showOnboardingPage( details )
+{
+  if ( details.temporary ) return;
+  if ( details.reason !== "install" ) return;
   await browser.tabs.create(
     { url: "https://jschmidt.srht.site/copy-on-select-2/onboarding.html" } );
+}
+
+browser.runtime.onInstalled.addListener( async ( details ) => {
+  await maintainAddOnOptions( details );
+  await showOnboardingPage( details );
 } );

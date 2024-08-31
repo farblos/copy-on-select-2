@@ -143,7 +143,7 @@ In thunder, lightning, or in rain?</textarea>
 In thunder, lightning, or in rain?</textarea>
     </section>
 
-    <!-- (sync-mark-input-elements) -->
+    <!-- (sync-mark-in-input-elements) -->
     <section class="twocolelt">
     <h4>Text Area Text with Input Element Option (PASS)</h4>
 
@@ -162,7 +162,7 @@ In thunder, lightning, or in rain?</textarea>
            value="When shall we three meet again"/>
     </section>
 
-    <!-- (sync-mark-input-elements) -->
+    <!-- (sync-mark-in-input-elements) -->
     <section class="twocolelt">
     <h4>Text Box Text with Input Element Option (PASS)</h4>
 
@@ -172,6 +172,10 @@ In thunder, lightning, or in rain?</textarea>
 
     <section class="twocolelt">
     <h4>Iframe Text (PASS)</h4>
+
+    <!-- (sync-mark-min-version) -->
+    <p>(This test results in a FAIL on Firefox 78.  And I am not
+    going to document that otherwise or even work around it!)</p>
 
     <iframe height="80" sandbox="" src="simple.html"
             style="border: 1px solid gray"></iframe>
@@ -190,6 +194,87 @@ In thunder, lightning, or in rain?</textarea>
     <p><img width="64" height="64" alt=""
             src="copy-on-select-2-notext.svg"/></p>
     </section>
+
+    <p class="flexsep"></p>
+
+    <section class="twocolelt">
+    <h4>Non-Main Button Clicks (PASS)</h4>
+
+    <p>Select word "hurlyburly" with a double-click; then copy
+    some different text from a non-browser source; then press the
+    secondary button twice and ensure that this does not copy the
+    word "hurlyburly" to the clipboard again.  Repeat that test
+    for the auxilliary button, which you should press on
+    some <a target="_blank" href="about:blank">link</a>.</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Main Button Clicks into Existing Selection (PASS)</h4>
+
+    <p>Select word "hurlyburly" with a double-click; then copy
+    some different text from a non-browser source; then press the
+    main button over the selected word "hurlyburly" and ensure
+    that this does not copy the word "hurlyburly" to the
+    clipboard again.  Repeat that test with a text-boxed
+    <input id="37bc36a4-6aa8-11ef-a19f-b344135608aa"
+           type="text"
+           spellcheck="false"
+           size="10"
+           value="hurlyburly"/>.</p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Triple-Click Whitespace Trimming (FF only, FAIL)</h4>
+
+    <!-- (sync-mark-trim-triple-clicks) -->
+    <p>Ensure that the triple-click trimming option is switched
+    on; then triple-click on the second line below and ensure
+    that it is copied to the clipboard without leading and
+    trailing whitespace.  (We cannot change FF's primary
+    selection, so the test result is what it is.)</p>
+
+    <p>
+    When shall we three meet again<br/>
+    In thunder, lightning, or in rain?
+    </p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Multi-Range Selection Separation (FF only, FAIL)</h4>
+
+    <!-- (sync-mark-multi-range-sep) -->
+    <p>Ensure that the multi-range selection separator is on
+    default <code>%0a</code>; then control-double-click two words
+    in the first line below and ensure that they are copied to
+    the clipboard with a separating newline character.  Repeat
+    that test, but this time control-select one of the table
+    cells from the second line below and a word from the first
+    line and ensure that they are copied to the
+    clipboard <em>without</em> a separating newline
+    character.</p>
+
+    <p>
+    When shall we three meet again
+    </p>
+    <table style="margin: 0px; border-collapse: collapse; width: max-content"><tbody>
+    <tr><td style="padding-left: 0px">In thunder,</td><td>lightning,</td><td style="padding-right: 0px">or in rain?</td></tr>
+    </tbody></table>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Control-Clicks with Existing Selection (FF only, PASS)</h4>
+
+    <!-- (sync-mark-multi-range-sep) -->
+    <p>Ensure that the multi-range selection separator is on
+    default <code>%0a</code>; then select word "hurlyburly" with
+    a double-click; then copy some different text from a
+    non-browser source; then control-click outside of the
+    existing selection and ensure that this copies the word
+    "hurlyburly" to the clipboard again, but without any leading
+    or trailing newline.</p>
+    </section>
+
+    <div class="colfiller"></div>
 
     <p class="flexsep"></p>
 

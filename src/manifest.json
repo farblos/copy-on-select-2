@@ -53,6 +53,7 @@
         "<all_urls>"
       ],
       "js": [
+        "common.js",
         "copy-on-select.js"
       ],
       "all_frames": true,
@@ -62,8 +63,10 @@
 
   "background": {
     "scripts": [
+      "common.js",
       "background.js"
-    ]
+    ],
+    "persistent": false
   },
 
   "options_ui": {

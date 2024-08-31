@@ -11,16 +11,48 @@
   == SPDX-License-Identifier: MPL-2.0 -->
 
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta charset="utf-8" />
-    <script src="options.js" defer="true"></script>
+    <title>Options</title>
+    <meta charset="utf-8"/>
+    <script src="common.js" defer=""></script>
+    <script src="options.js" defer=""></script>
+    <style>
+      p {
+        margin-bottom: 0px;
+      }
+      p.save {
+        border-top: solid 1px;
+        padding-top: 1em;
+      }
+    </style>
   </head>
   <body class="browser-style">
+
+    <!-- (sync-mark-all-options) -->
+
+    <p><strong>Generally Useful Options</strong></p>
     <p>
-      <input id="in_input_elements" type="checkbox">
-      <!-- (sync-mark-input-elements) -->
+      <input id="in_input_elements" type="checkbox"/>
+      <!-- (sync-mark-in-input-elements) -->
       <label for="in_input_elements">Copy-on-select in input elements</label>
     </p>
+
+    <p><strong>Experimental Options</strong></p>
+    <p>
+      <input id="trim_triple_clicks" type="checkbox"/>
+      <!-- (sync-mark-trim-triple-clicks) -->
+      <label for="trim_triple_clicks">Trim triple-click paragraph selections</label>
+    </p>
+    <p style="margin-left: 4px">
+      <label for="multi_range_sep">Join multi-range selections with</label><br/>
+      <!-- (sync-mark-multi-range-sep) -->
+      <input id="multi_range_sep" type="text"/>
+    </p>
+
+    <p class="save">
+      <input id="save" type="button" value="Save"/>
+    </p>
+
   </body>
 </html>
