@@ -73,7 +73,7 @@ for this add-on to copy-on-select:
 
   Some pages from `mozilla.org` domains
 
-  Disabled input elements of a web page
+  Disabled input fields of a web page
 
 - *Probably possible, probably not:*
 
@@ -121,40 +121,72 @@ your browser to extend the scope of this add-on:
 
 - (FF) "Run on sites with restrictions"
 
+## Generally Useful Options
+
+<!-- (sync-mark-in-input-elements) -->
+### Copy-on-select in input elements
+
+If this option is checked, copy-on-select also processes
+selections in input fields, like text boxes or text areas.
+
+The interesting question here is why you would want to switch
+that off?  Because in editable input elements you occasionally
+might want to mark text not to copy it, but rather to overwrite
+it with what is on the clipboard ... and that you just have
+overwritten by marking the text you wanted to overwrite.
+
 ## Experimental Options
 
 The following options control somewhat special features.  Chances
 are that you do not need to worry about these.
 
+<!-- (sync-mark-use-native-copy) -->
+### Use native copy command
+
+Browsers provide two alternatives to write to the clipboard, one
+more recent, text-only copy method and a native copy command.  If
+this option is checked, copy-on-select uses the native copy
+command to copy selections to the clipboard, otherwise the
+text-only copy method.
+
+The text-only copy method provides more freedom for what text to
+place into the clipboard, while the native copy command exactly
+copies to the clipboard what `Ctrl+V` (or `Command+V`) would
+copy.  In particular, using the native copy command also allows
+to copy-on-select rich text including markup information.  While
+that might sound promising, there is one drawback: The native
+copy command is based on the [deprecated
+`execCommand`](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
+
 <!-- (sync-mark-trim-triple-clicks) -->
-- Trim triple-click paragraph selections
+### Trim triple-click paragraph selections
 
-  Triple-clicks in general select the paragraph being clicked on.
-  At least for Firefox the resulting text selection may include
-  leading and trailing whitespace.  If this option is checked,
-  copy-on-select trims such whitespace while copying the
-  selection to the clipboard.
+Triple-clicks in general select the paragraph being clicked on.
+At least for Firefox the resulting text selection may include
+leading and trailing whitespace.  If this option is checked,
+copy-on-select trims such whitespace while copying the selection
+to the clipboard.
 
-  Cbbs seem to trim such whitespace by default, so on these
-  browsers this option does not have any effect.
+Cbbs seem to trim such whitespace by default, so on these
+browsers this option does not have any effect.
 
 <!-- (sync-mark-multi-range-sep) -->
-- Join multi-range selections with ...
+### Join multi-range selections with
 
-  On Firefox you can select multiple text (or other) ranges by
-  holding down the `Control` key during the selection operation.
-  For text ranges Firefox builds the resulting overall selection
-  simply by concatenating the selected ranges, without any
-  separator in between them.  If the separator string given by
-  this option (in [percent encoding][percent_encoding]) is
-  non-empty, copy-on-select uses it as separator between the
-  selected ranges while copying the selection to the clipboard.
-  But only if all selected ranges are actually text ranges.
+On Firefox you can select multiple text (or other) ranges by
+holding down the `Control` key during the selection operation.
+For text ranges Firefox builds the resulting overall selection
+simply by concatenating the selected ranges, without any
+separator in between them.  If the separator string given by this
+option (in [percent encoding][percent_encoding]) is non-empty,
+copy-on-select uses it as separator between the selected ranges
+while copying the selection to the clipboard.  But only if all
+selected ranges are actually text ranges.
 
-  Use an empty separator string to disable this feature.
+Use an empty separator string to disable this feature.
 
-  Cbbs do not provide multi-range selection, so on these browsers
-  this option does not have any effect.
+Cbbs do not provide multi-range selection, so on these browsers
+this option does not have any effect.
 
 [percent_encoding]: https://en.wikipedia.org/wiki/Percent-encoding
 
@@ -162,8 +194,10 @@ are that you do not need to worry about these.
 
 In All Versions
 
+<!-- (sync-mark-use-native-copy) -->
 - Copy-on-select does not (and cannot) always properly handle
-  multi-range selections, for example, not in input elements.
+  multi-range selections, for example, not in input fields.  As a
+  work-around you can switch on option "Use native copy command".
 
 Since Version 2.6
 

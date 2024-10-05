@@ -16,22 +16,33 @@
 // hopefully before any other code of this add-on executes
 async function maintainAddOnOptions( details )
 {
-  const oo = await loadLocalStorage();
+  const oo = await loadOptions( true );
   const on = {};
+  const or = [];
 
-  for ( const [ option, defval ] of Object.entries( OPTIONS ) )
-    if ( Object.hasOwn( oo, option ) )
-      delete oo[option];
+  // determine current option set version, defaulting an absent
+  // one to zero
+  const osvers = Object.hasOwn( oo, "_version" ) ? oo["_version"] : 0;
+
+  // determine new option values from local storage, defaulting
+  // them as needed
+  for ( const [ option, { default: defval } ] of Object.entries( OPTION_METADATA ) )
+    if ( (Object.hasOwn( oo, option )) &&
+         (typeof oo[option] === typeof defval) )
+      on[option] = oo[option];
     else
       on[option] = defval;
 
-  // default any new options in local storage
-  if ( Object.keys( on ).length > 0 )
-    await saveLocalStorage( on );
+  // mark unknown items in the local storage for removal
+  for ( const option of Object.keys( oo ) )
+    if ( (! Object.hasOwn( OPTION_METADATA, option )) &&
+         (option !== "_version") )
+      or.push( option );
 
-  // remove any unknown options from local storage
-  if ( Object.keys( oo ).length > 0 )
-    await cleanLocalStorage( Object.keys( oo ) );
+  // update option set version
+  on["_version"] = OPTION_VERSION;
+
+  await saveOptions( true, on, or );
 }
 
 async function showOnboardingPage( details )

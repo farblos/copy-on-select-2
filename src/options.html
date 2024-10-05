@@ -18,15 +18,51 @@
     <script src="common.js" defer=""></script>
     <script src="options.js" defer=""></script>
     <style>
+      /* adjust the option page to the overall color scheme.
+         Seems to be required by FF only.  As is the explicit
+         background color setting, which corresponds to
+         --background-color-box or --color-gray-80, resp. */
+      @media ( prefers-color-scheme: dark ) {
+        :root {
+          color-scheme: dark;
+          background: #23222b;
+        }
+      }
+
+      /* add body margins or otherwise elements near the option
+         page margins and/or their focus indicators might not get
+         fully displayed in FF */
+      body {
+        margin-right: 4px;
+        margin-left: 4px;
+      }
+
       p {
         margin-bottom: 0px;
       }
-      p.save {
+      p.error {
+        margin-top: 0px;
+        margin-left: 1rem;
+        color: red;
+      }
+      p.button-bar {
         border-top: solid 1px;
         padding-top: 1em;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      a.option-doc {
+        margin-left: 0.5ex;
+      }
+      a.option-doc > img {
+        width: 1em;
+        height: 1em;
+        margin-bottom: -0.1em;
       }
     </style>
   </head>
+
   <body class="browser-style">
 
     <!-- (sync-mark-all-options) -->
@@ -40,18 +76,24 @@
 
     <p><strong>Experimental Options</strong></p>
     <p>
+      <input id="use_native_copy" type="checkbox"/>
+      <!-- (sync-mark-use-native-copy) -->
+      <label for="use_native_copy">Use native copy command</label>
+    </p>
+    <p>
       <input id="trim_triple_clicks" type="checkbox"/>
       <!-- (sync-mark-trim-triple-clicks) -->
       <label for="trim_triple_clicks">Trim triple-click paragraph selections</label>
     </p>
-    <p style="margin-left: 4px">
+    <p>
       <label for="multi_range_sep">Join multi-range selections with</label><br/>
       <!-- (sync-mark-multi-range-sep) -->
       <input id="multi_range_sep" type="text"/>
     </p>
 
-    <p class="save">
-      <input id="save" type="button" value="Save"/>
+    <p class="button-bar">
+      <input id="save"  type="button" value="Save"/>
+      <input id="reset" type="button" value="Reset"/>
     </p>
 
   </body>

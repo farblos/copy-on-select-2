@@ -63,8 +63,9 @@ https://addons.mozilla.org/en-US/firefox/addon/copy-on-select by
 late
 [spyrosoft](https://addons.mozilla.org/en-US/firefox/user/5778000).
 See the [version
-history](https://git.sr.ht/~jschmidt/copy-on-select-2#version-history)
-on SourceHut for information on what has changed since the fork.
+history](https://sr.ht/~jschmidt/copy-on-select-2#version-history)
+on the add-on homepage for information on what has changed since
+the fork.
 
 Here are some cases where it is difficult or outright impossible
 for this add-on to copy-on-select:

@@ -301,20 +301,24 @@ class CopyOnSelect
 
   async copy( s )
   {
-    // never clear the clipboard by copying an empty string to it
-    if ( s.length === 0 )
-      return;
+    if ( (typeof s === "string") ) {
+      // never clear the clipboard by copying an empty string to
+      // it
+      if ( s.length === 0 )
+        return;
 
-    try {
-      // carefully try the modern approach to write to the
-      // clipboard ...
-      await navigator.clipboard.writeText( s );
+      try {
+        await navigator.clipboard.writeText( s );
+      }
+      catch ( e ) {
+        // fall back to deprecated document.execCommand if
+        // something fails, hoping it will pick the right
+        // selection
+        document.execCommand( "copy" );
+      }
     }
-    catch ( e ) {
-      // ... but fall back to deprecated document.execCommand if
-      // that fails, hoping it will pick the right selection
+    else
       document.execCommand( "copy" );
-    }
   }
 
   handleEvent( e )
@@ -382,6 +386,10 @@ class CopyOnSelect
     else
       this.downSelection = null;
 
+    // use native copy up front
+    if ( (this.use_native_copy) ) {
+      this.copy();
+    }
     // copy a single-range selection or a multi-range selection
     // with multi-range selection separation switched off.
     //
@@ -391,9 +399,9 @@ class CopyOnSelect
     // "singleRanged" and "ranges" of our selection classes take
     // that into account by filtering collapsed ranges from the
     // active ranges.
-    if ( (sel.singleRanged) &&
-         (e.detail === 3) &&
-         (this.trim_triple_clicks) ) {
+    else if ( (sel.singleRanged) &&
+              (e.detail === 3) &&
+              (this.trim_triple_clicks) ) {
       this.copy( sel.toString().trim() );
     }
     else if ( (sel.singleRanged) ) {
@@ -455,25 +463,17 @@ class CopyOnSelect
   async initialize()
   {
     // initialize option fields from storage ...
-    const o = await loadLocalStorage();
+    const o = await loadOptions();
     for ( const [ option, value ] of Object.entries( o ) )
-      if ( Object.hasOwn( OPTIONS, option ) )
-        this[option] = value;
-      else
-        console.error( `Cannot initialize unknown option field "${option}".` );
-    for ( const option of Object.keys( OPTIONS ) )
-      if ( ! Object.hasOwn( o, option ) )
-        console.error( `Cannot initialize option field from missing option "${option}".` );
+      this[option] = value;
 
-    // ... and stay up-to-date on storage changes
+    // ... and stay up-to-date on storage changes.  Do not check
+    // the option values here, consider them indirectly checked
+    // by function saveOptions.
     browser.storage.onChanged.addListener( ( c ) => {
       for ( const [ option, { newValue: value } ] of Object.entries( c ) )
-        if ( Object.hasOwn( OPTIONS, option ) )
-          this[option] = value;
-        else
-          console.error( `Cannot update unknown option field "${option}".` );
-      }
-    );
+        this[option] = value;
+    } );
 
     // set up a bubbling event handler and an observer, using the
     // setup function also as (bound) observer function.

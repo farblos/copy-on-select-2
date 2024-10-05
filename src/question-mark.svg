@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- question-mark.svg - documentation link icon.
+  ==
+  == Copyright (C) 2024 Jens Schmidt
+  ==
+  == This Source Code Form is subject to the terms of the Mozilla Public
+  == License, v. 2.0. If a copy of the MPL was not distributed with this
+  == file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ==
+  == SPDX-FileCopyrightText: 2024 Jens Schmidt
+  ==
+  == SPDX-License-Identifier: MPL-2.0 -->
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:cc="http://creativecommons.org/ns#"
+  width="128"
+  height="128"
+  viewBox="0 0 33.867000 33.867000"
+  version="1.1">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work
+        rdf:about="">
+        <cc:license
+          rdf:resource="https://spdx.org/licenses/MPL-2.0.html" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <circle
+    style="stroke:#808080;stroke-width:4.824950;stroke-opacity:1;fill:none"
+    cx="16.933498"
+    cy="16.933498"
+    r="14.521028" />
+  <path
+    style="fill:#808080;fill-opacity:1"
+    d="m 18.691892,20.080970 h -4.189277 v -0.418927 q 0,-1.069368 0.242537,-1.730833 0.242537,-0.672489 0.716587,-1.223710 0.485074,-0.551221 2.160785,-1.940297 0.892977,-0.727611 0.892977,-1.333954 0,-0.606343 -0.363805,-0.937075 -0.352781,-0.341757 -1.080393,-0.341757 -0.782733,0 -1.300881,0.518147 -0.507123,0.518148 -0.650440,1.808004 L 10.842510,13.951396 q 0.220488,-2.359224 1.708784,-3.792398 1.499320,-1.444198 4.586156,-1.444198 2.403322,0 3.880593,1.003222 2.006444,1.356002 2.006444,3.616007 0,0.937075 -0.518148,1.808004 -0.518147,0.870929 -2.116687,2.127712 -1.113466,0.881953 -1.411125,1.422149 -0.286635,0.529172 -0.286635,1.389076 z m -4.332595,1.113466 h 4.486937 v 3.957765 h -4.486937 z" />
+</svg>
