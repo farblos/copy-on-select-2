@@ -252,6 +252,25 @@ assemble the pieces to what other add-ons need.
 
 ## Version History
 
+Version 2.8
+
+*Add-On Changes*
+
+- Improves event handling to reduce false copy-on-selects.  Which
+  is an important prerequisite to implement a reasonable
+  indicator for copy-on-selects, as requested in [issue
+  #14](https://github.com/farblos/copy-on-select-2/issues/14).
+
+- Adds options for handling some more experimental aspects of
+  copy-on-select, most notably the option to use native copy
+
+- Streamlines and generalizes option handling
+
+*Infrastructure Changes*
+
+- Extends test instructions, in general and for the new features
+  in particular
+
 Version 2.7
 
 *Add-On Changes*
