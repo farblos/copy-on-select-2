@@ -15,17 +15,27 @@
   <head>
     <title>Options</title>
     <meta charset="utf-8"/>
+    <!-- define metadata element "color-scheme" to let browsers
+      == automatically adapt this option page to the overall
+      == color scheme, see [1].
+      ==
+      == The media query on "prefers-color-scheme: dark" further
+      == below is a work-around for some FF versions where this
+      == metadata element alone is not sufficient.  See [2] and
+      == [3].
+      ==
+      == [1]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages
+      == [2]: https://bugzilla.mozilla.org/show_bug.cgi?id=1888866#cs-10
+      == [3]: https://github.com/farblos/copy-on-select-2/issues/15
+      -->
+    <meta name="color-scheme" content="light dark"/>
     <script src="common.js" defer=""></script>
     <script src="options.js" defer=""></script>
     <style>
-      /* adjust the option page to the overall color scheme.
-         Seems to be required by FF only.  As is the explicit
-         background color setting, which corresponds to
-         --background-color-box or --color-gray-80, resp. */
       @media ( prefers-color-scheme: dark ) {
-        :root {
-          color-scheme: dark;
-          background: #23222b;
+        html, body {
+          background: Canvas;
+          color: CanvasText;
         }
       }
 
