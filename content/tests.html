@@ -56,7 +56,9 @@
     <ul>
     <li><p>For Firefox Nightly, start the browser as</p>
 
-    <pre>~/tmp/firefox/firefox -p nightly &amp;</pre>
+    <pre>~/work/copy-on-select-2/collateral/firefox-nightly/firefox -p nightly &amp;</pre>
+
+    <p>and update it through its "About Firefox" dialogue.</p>
 
     <p>Then navigate
     to <code>about:debugging#/runtime/this-firefox</code> to
@@ -74,23 +76,30 @@
     <p>Then open the XPI package to be tested
     with <code>C-o</code>, open a new tab to perform the tests
     in, load the test page in that tab, and finally open the
-    add-on page with <code>C-S-a</code>.  When done testing,
-    remove the add-on again.  Any deviation from this procedure
-    may result in the add-on not being activated!</p></li>
+    add-on page with <code>C-S-a</code>.  Any deviation from this
+    order may result in the add-on not being activated!</p></li>
 
     <li><p>For Debian stable's Firefox, start the browser as</p>
 
     <pre>firefox -p unprotected &amp;</pre></li>
 
-    <li><p>For ungoogled chromium, install or update
-    flatpak <code>io.github.ungoogled_software.ungoogled_chromium</code>
-    and run it with</p>
+    <li><p>For ungoogled chromium, update its flatpak with</p>
+
+    <pre>flatpak update io.github.ungoogled_software.ungoogled_chromium</pre>
+
+    <p>and run it with</p>
 
     <pre>flatpak run io.github.ungoogled_software.ungoogled_chromium &amp;</pre>
 
-    <p>After installing the CRX package to be tested, select the
-    extension details and switch on option "Allow access to file
-    URLs" there.</p></li>
+    <p>After installing the CRX package to be tested
+    with <code>C-o</code>, select the extension details and
+    switch on option "Allow access to file URLs" there.</p>
+
+    <p>Only then open a new tab to perform the tests in and load
+    the test page in that tab.  This order is important since
+    ungoogled chromium does not seem to trigger listeners
+    on <code>browser.storage.onChanged</code> for pages loaded
+    before an add-on got installed.</p></li>
     </ul>
     </section>
 
@@ -200,8 +209,9 @@ In thunder, lightning, or in rain?</textarea>
             sandbox="" src="simple.html"></iframe>
     </section>
 
+    <!-- (sync-mark-min-version) -->
     <section class="twocolelt">
-    <h4>Non-Text (FAIL)</h4>
+    <h4>Non-Text (FAIL, non-FF-78 only)</h4>
 
     <p>Select the following image.  Without native copy that
     should clear the primary selection, but not the clipboard.
@@ -272,8 +282,9 @@ In thunder, lightning, or in rain?</textarea>
 
     <li>Login to <a target="_blank"
     href="https://docs.google.com">https://docs.google.com</a>;
-    select the hamburger menu; select spreadsheets.  Ensure that
-    copy (<code>C-c</code>) and paste (<code>C-v</code>) work in
+    select the hamburger menu; select spreadsheets; select one of
+    the template spreadsheets.  Ensure that copy
+    (<code>C-c</code>) and paste (<code>C-v</code>) work in
     cells.  Remove the test spreadsheet when done.
     (<a target="_blank"
     href="https://github.com/farblos/copy-on-select-2/issues/1">GitHub
@@ -340,9 +351,9 @@ In thunder, lightning, or in rain?</textarea>
 
     <ul class="test">
     <li>Open the option page; open the browser preferences in
-    another tab; switch to "Dark Mode" for website appearance and
+    another tab; switch to "Dark" for website appearance and
     ensure that the option page turns dark as well.</li>
-    <li>Then switch to "Automatic Mode" for website appearance
+    <li>Then switch to "Automatic" for website appearance
     again.</li>
     </ul>
     </section>
@@ -431,6 +442,12 @@ In thunder, lightning, or in rain?</textarea>
 
     <section class="twocolelt">
     <h4>Control-Clicks with Existing Selection (FF only, PASS)</h4>
+
+    <!-- On FF a control-click while some selection is already
+      == active creates a multi-range selection of the previously
+      == active ranges and a collapsed new range.  This test
+      == ensures that copy-on-select properly filters such
+      == collapsed ranges. -->
 
     <!-- (sync-mark-multi-range-sep) -->
     <p>Ensure that the multi-range selection separator is on
