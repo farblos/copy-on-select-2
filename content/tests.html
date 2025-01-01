@@ -56,7 +56,8 @@
     <ul>
     <li><p>For Firefox Nightly, start the browser as</p>
 
-    <pre>~/work/copy-on-select-2/collateral/firefox-nightly/firefox -p nightly &amp;</pre>
+    <pre>( cd ~/work/copy-on-select-2 &&
+  ./collateral/firefox-nightly/firefox -profile collateral/tprof-nightly ) &amp;</pre>
 
     <p>and update it through its "About Firefox" dialogue.</p>
 
@@ -71,7 +72,9 @@
     as</p>
 
     <!-- (sync-mark-min-version) -->
-    <pre>MOZ_FORCE_DISABLE_E10S=1 ~/work/copy-on-select-2/collateral/firefox-78.15.0esr/firefox -p esr-78 &amp;</pre>
+    <pre>( cd ~/work/copy-on-select-2 &&
+  MOZ_FORCE_DISABLE_E10S=1 \
+  ./collateral/firefox-78/firefox -profile collateral/tprof-78 ) &amp;</pre>
 
     <p>Then open the XPI package to be tested
     with <code>C-o</code>, open a new tab to perform the tests
@@ -81,7 +84,8 @@
 
     <li><p>For Debian stable's Firefox, start the browser as</p>
 
-    <pre>firefox -p unprotected &amp;</pre></li>
+    <pre>( cd ~/work/copy-on-select-2 &&
+  firefox -profile collateral/tprof-stable ) &amp;</pre></li>
 
     <li><p>For ungoogled chromium, update its flatpak with</p>
 
@@ -461,6 +465,84 @@ In thunder, lightning, or in rain?</textarea>
     </section>
 
     <div class="colfiller"></div>
+
+    <section class="onecolelt">
+
+    <h3>Random Test Notes</h3>
+
+    <h4>Setting up Firefox Installations and Profiles for Testing this Add-On</h4>
+
+    <p>Define FF major version, tarball location, and
+    installation type (one of <code>tmp</code>
+    or <code>collateral</code> for temporary or permanent
+    installation, respectively):</p>
+
+    <pre>
+version=...
+tarball=...
+type=...</pre>
+
+    <p>Create a FF installation:</p>
+
+    <pre>
+cd ~/work/copy-on-select-2/$type
+rm -rf firefox
+tar xf $tarball
+chmod -R u+w firefox-$version
+rm -rf firefox-$version
+mv firefox firefox-$version
+
+# for immutable FFs only
+mkdir firefox-$version/distribution
+cat &lt;&lt; 'EOF' &gt; firefox-$version/distribution/policies.json
+{
+  "policies": {
+    "DisableAppUpdate": true
+  }
+}
+EOF
+
+# for very immutable FFs only
+chmod -R a-w firefox-$version</pre>
+
+    <p>Create a sane test profile.  This still lets come through
+    the "Choose What I Share" prompt, but pretty much nothing
+    else.</p>
+
+    <pre>
+cd ~/work/copy-on-select-2/$type
+rm -rf tprof-$version
+mkdir tprof-$version
+cat &lt;&lt; 'EOF' &gt; tprof-$version/prefs.js
+// do not remove this line
+user_pref("app.shield.optoutstudies.enabled", false);
+user_pref("browser.aboutwelcome.enabled", false);
+user_pref("browser.discovery.enabled", false);
+user_pref("browser.newtabpage.enabled", false);
+user_pref("browser.open.lastDir", "~/work/copy-on-select-2/dist");
+user_pref("browser.shell.checkDefaultBrowser", false);
+user_pref("browser.startup.couldRestoreSession.count", 2);
+user_pref("browser.startup.homepage", "about:blank");
+user_pref("browser.tabs.warnOnClose", false);
+user_pref("browser.toolbars.bookmarks.visibility", "never");
+user_pref("browser.translations.automaticallyPopup", false);
+user_pref("browser.warnOnQuit", false);
+user_pref("browser.warnOnQuitShortcut", false);
+user_pref("datareporting.healthreport.uploadEnabled", false);
+user_pref("devtools.chrome.enabled", true);
+user_pref("devtools.debugger.remote-enabled", true);
+user_pref("layout.css.devPixelsPerPx", "1.25");
+user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
+user_pref("xpinstall.signatures.required", false);
+EOF</pre>
+
+    <p>To start a temporarily installed FF as set up above
+    execute:</p>
+
+    <pre>( cd ~/work/copy-on-select-2 &&
+  ./tmp/firefox-$version/firefox -profile tmp/tprof-$version ) &amp;</pre>
+
+    </section>
   </main>
 
   <footer>
