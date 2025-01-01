@@ -22,7 +22,7 @@
   "description": "A productivity tool which copies selected text to the clipboard automatically",
   "homepage_url": "https://sr.ht/~jschmidt/copy-on-select-2",
 
-  "version": "2.8",
+  "version": "2.9",
 
   // (sync-mark-min-version)
   "browser_specific_settings": {
