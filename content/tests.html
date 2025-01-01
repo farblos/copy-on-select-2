@@ -347,14 +347,15 @@ In thunder, lightning, or in rain?</textarea>
     </section>
 
     <section class="twocolelt">
-    <h4>Dark Mode (FF only)</h4>
+    <h4>Dark Mode</h4>
 
     <ul class="test">
-    <li>Open the option page; open the browser preferences in
-    another tab; switch to "Dark" for website appearance and
-    ensure that the option page turns dark as well.</li>
-    <li>Then switch to "Automatic" for website appearance
-    again.</li>
+    <li>Open the option page; execute
+    <pre>gsettings set org.gnome.desktop.interface color-scheme prefer-dark</pre>
+    and ensure that the option page turns dark.</li>
+    <li>Then execute
+    <pre>gsettings set org.gnome.desktop.interface color-scheme default</pre>
+    and ensure that the option page turns light again.</li>
     </ul>
     </section>
 
