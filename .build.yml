@@ -37,7 +37,7 @@ secrets:
   # farblos-amo.jwt-secret
   - c3903a5e-aef5-4cb6-9b11-bb3a38d738c7
   # farblos-github.copy-on-select-2-mirror-token
-  - 421b4abc-bf08-4bb0-adb2-301207f1f358
+  - 9c8127bd-8ff3-401c-ba79-5e6fe0adf4e2
 
 oauth:
   git.sr.ht/OBJECTS:RW
