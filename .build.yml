@@ -36,6 +36,8 @@ secrets:
   - 67958885-6232-495a-9549-260f13031a15
   # farblos-amo.jwt-secret
   - c3903a5e-aef5-4cb6-9b11-bb3a38d738c7
+  # farblos-github.copy-on-select-2-mirror-token
+  - 421b4abc-bf08-4bb0-adb2-301207f1f358
 
 oauth:
   git.sr.ht/OBJECTS:RW
@@ -54,4 +56,10 @@ tasks:
       elif [[ ${GIT_REF-} =~ ^refs/tags/v2\.[1-9][0-9]*\.[1-9][0-9]*$ ]]; then
         cd copy-on-select-2 &&
         ./make build-test publish "${GIT_REF#refs/tags/v}"
+      # if this is a push to the main branch, then mirror that
+      # push to github.  See https://ersei.net/en/blog/srht-time.
+      elif [[ ${GIT_REF-} = "refs/heads/main" ]]; then
+        cd copy-on-select-2 &&
+        git config --global credential.helper store &&
+        git push https://github.com/farblos/copy-on-select-2 "HEAD:$GIT_REF"
       fi
