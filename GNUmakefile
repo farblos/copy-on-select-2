@@ -21,5 +21,7 @@
 # "make publish draft" instead of "./make publish draft".
 #
 
-.PHONY: %
-%: ; @./make $(MAKECMDGOALS)
+# (sync-mark-all-make-targets)
+TARGETS := check clean build dist tag upload publish
+.PHONY: $(TARGETS)
+$(TARGETS): ; @./make $(MAKECMDGOALS)

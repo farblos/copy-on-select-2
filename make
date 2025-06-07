@@ -23,10 +23,11 @@
 # ========
 #
 # Usage: make ["build-test"] target ("draft" | version)
-# Targets: check => clean => build|all => dist => tag => upload => publish
+# Targets: check => clean => build => dist => tag => upload => publish
 #
 # This script processes the following targets, where later
-# targets generally imply execution of all previous ones:
+# targets generally imply execution of all previous ones
+# (sync-mark-all-make-targets):
 #
 #   check    ensures build prerequisites
 #   clean    removes known left-overs
@@ -233,7 +234,7 @@ usage()
   echo "$1" 1>&2
   echo 1>&2
   echo "Usage: make [\"build-test\"] target (\"draft\" | version)" 1>&2
-  echo "Targets: check => clean => build|all => dist => tag => upload => publish" 1>&2
+  echo "Targets: check => clean => build => dist => tag => upload => publish" 1>&2
   echo "  (later targets imply execution of all previous ones)" 1>&2
   exit 2
 }
@@ -828,14 +829,12 @@ else
   btestp=0
 fi
 
+# (sync-mark-all-make-targets)
 target=
 if   [[ $# == 0 ]]; then
   usage "No target specified."
 elif [[ $1 =~ ^(check|clean|build|dist|tag|upload|publish)$ ]]; then
   target=$1
-  shift 1
-elif [[ $1 == "all" ]]; then
-  target="build"
   shift 1
 else
   usage "Invalid target \"$1\" specified."
