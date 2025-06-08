@@ -15,21 +15,25 @@
 //
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 
-// Keep exactly one completely empty line between above license
-// header and this comment, it is required by the build script!
 {
-  "name": "Copy On Select 2",
-  "description": "A productivity tool which copies selected text to the clipboard automatically",
-  "homepage_url": "https://sr.ht/~jschmidt/copy-on-select-2",
+  "name": "[% addon_name %]",
+  "description": "[% addon_desc %]",
+[% IF (equal relmode "final") -%]
+  "homepage_url": "[% addon_homepage %]",
+[% ELSE -%]
+  "homepage_url": "https://git.sr.ht/~jschmidt/copy-on-select-2/tree/[% branch %]/item/README.md",
+[% END -%]
 
-  "version": "2.9",
+  "version": "[% version %]",
 
   // (sync-mark-min-version)
   "browser_specific_settings": {
+[% IF (equal addontype "xpi") -%]
     "gecko": {
-      "id": "{dd97d42c-6560-4fb2-8db4-bf340824fde0}",
-      "strict_min_version": "78.0"
+      "id": "[% addon_amo_id %]",
+      "strict_min_version": "[% addon_strict_min_vers %]"
     }
+[% END -%]
   },
 
   // provide icons for installation from package.  For
@@ -61,6 +65,7 @@
     }
   ],
 
+[% IF (equal addontype "xpi") -%]
   "background": {
     "scripts": [
       "common.js",
@@ -68,10 +73,19 @@
     ],
     "persistent": false
   },
+[% ELSE -%]
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+[% END -%]
 
   "options_ui": {
     "page": "options.html"
   },
 
+[% IF (equal addontype "xpi") -%]
   "manifest_version": 2
+[% ELSE -%]
+  "manifest_version": 3
+[% END -%]
 }

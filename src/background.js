@@ -49,8 +49,13 @@ async function showOnboardingPage( details )
 {
   if ( details.temporary ) return;
   if ( details.reason !== "install" ) return;
+[% IF (equal relmode "final") -%]
   await browser.tabs.create(
     { url: "https://jschmidt.srht.site/copy-on-select-2/onboarding.html" } );
+[% ELSE -%]
+  await browser.tabs.create(
+    { url: "https://jschmidt.srht.site/drafts/copy-on-select-2/onboarding.html" } );
+[% END -%]
 }
 
 browser.runtime.onInstalled.addListener( async ( details ) => {

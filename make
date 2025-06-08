@@ -65,9 +65,8 @@
 #   ./make publish 2.N
 #
 # where the version 2.N must be strictly larger than all other
-# existing versions.  In addition, version 2.N must be maintained
-# both in the version history of the readme and in the add-on
-# manifest.
+# existing versions.  In addition, version 2.N must be described
+# in the version history of the readme.
 #
 # For final releases, this script starts off locally but
 # transfers control to the SourceHut build service by pushing an
@@ -102,9 +101,9 @@
 #
 # This build script intentionally uses as little external
 # dependencies as reasonably possible.  It requires the usual
-# standard Linux utilities, curl, git, gpg, jq, openssl, python
-# (including the cryptography package), and the following more
-# mundane dependencies:
+# standard Debian GNU/Linux utilities, curl, git, gpg, jq,
+# openssl, perl, python (including the cryptography package), and
+# the following more mundane dependencies:
 #
 # - markdown2, xsltproc (Debian packages: python3-markdown2,
 #   xsltproc) to convert Markdown documentation to something that
@@ -129,12 +128,12 @@
 #   tokens and other secrets in both cases.
 #
 # - This script creates a version 2 manifest for the XPI package
-#   and a version 3 manifest for the CRX package.  The sources
-#   provide for an unpacked, temporary version 2 manifest add-on.
+#   and a version 3 manifest for the CRX package.
 #
 # - This script manages the complete add-on metadata on AMO, like
 #   add-on description, add-on icon, version descriptions,
-#   etc. from files stored in the add-on's Git repository.
+#   etc. from this file and other files stored in the add-on's
+#   Git repository.
 #
 # - This script should be xtrace-safe, security-wise: If you
 #   switch on Bash tracing with "set -x", that setting is
@@ -143,6 +142,9 @@
 #   not leak into the build logs while still keeping as much
 #   trace available as possible.  This is implemented by means of
 #   functions pushx, popx, and curlx.
+#
+# - Function pp features a simple yet powerful template processor
+#   inspired in syntax by the Perl Template Toolkit.  And Lisp.
 #
 # - Function md2amohtml converts Markdown to the restricted AMO
 #   HTML ("some HTML allowed").
@@ -189,9 +191,33 @@
 #   respectively, on exit.
 #
 
-#{{{ constants
+#{{{ add-on metadata
 
 ADDON_SLUG="copy-on-select-2"
+
+# define add-on metadata, to be used both in the add-on itself
+# and for AMO.
+#
+# This script makes the metadata in this hash available both to
+# the template preprocessor and to jq when it processes the
+# non-description AMO metadata.  In both cases it maps any key
+# "$mdkey" from this hash to a template variable and JSON
+# variable, respectively, named "addon_${mdkey}".
+declare -A ADDON_METADATA=(
+  'slug'        "$ADDON_SLUG"
+  'name'        "Copy On Select 2"
+  'desc'        "A productivity tool which copies selected text to the clipboard automatically"
+
+  'homepage'    "https://sr.ht/~jschmidt/copy-on-select-2"
+  'support'     "~jschmidt/copy-on-select-2@lists.sr.ht"
+
+  'amo_id'      "{dd97d42c-6560-4fb2-8db4-bf340824fde0}"
+  'strict_min_vers' "78.0"
+)
+
+#}}}
+
+#{{{ constants
 
 SRHT_REPO_NAME="copy-on-select-2"
 
@@ -386,7 +412,7 @@ curlx()
 nrmlzws()
 {
   if [[ ! -f "$tdn/nrmlzws.awk" ]]; then
-    cat << 'EOF' > "$tdn/nrmlzws.awk"
+    cat << 'EOF' > "$tdn/nrmlzws.awk" # awk-mode
 # previous line, normalization options
 BEGIN {
   prevln = "";
@@ -438,6 +464,282 @@ EOF
 
 #}}}
 
+#{{{ pp
+
+# declare global template variables.  This script sets these up
+# as useful information gets available during the initialization.
+declare -a ppvars=()
+
+# Synopsis: pp template-variable[=value] input-file-template output-file
+#
+# Processes the specified input file template, writing the
+# resulting text to the specified output file.  Uses the global
+# template variables and any additional variables specified
+# before the input file template to control and instantiate the
+# template.  Such a template variable must start with a character
+# or an underscore, followed by an arbitrary number of word-like
+# characters.
+#
+# A template file consists of normal text, template comments, and
+# template statements.  Template comments and statements must not
+# span more than one line and must have one of the following
+# formats:
+#
+#   [%# comment %]      [%# comment -%]
+#   [% statement %]     [% statement -%]
+#
+# Normal text appears in the output unchanged.  Except for the
+# (potentially implicit) GET statement, template comments and
+# statements themselves do not appear in the output.  In
+# addition, a "-%]" delimiter immediately before a newline
+# suppresses inclusion of that newline in the output.
+#
+# There are the following template statements:
+#
+#   [% IF form %]...[% ELSIF form %]...[% ELSE %]...[% END %]
+#   [% INCLUDE form %]
+#   [% CALL form %]             # execute form for side-effects
+#   [% SET symbol = form %]     # set a template variable
+#   [% UNSET symbol %]
+#   [% GET form %]              # include string representation
+#   [% form %]                  # of form in the output
+#
+# Symbols refer to template variables and follow the syntax of
+# those.
+#
+# There are the following forms:
+#
+#   integer
+#   "double-quoted string"      # backslash quotes as usual
+#   symbol                      # evaluates to template variable
+#                               # value or the undefined value
+#   (function [arg...])
+#
+# and functions:
+#
+#   (defined form)
+#   (equal form0 form1)
+#   (not form)
+#   (if form0 form1 [form2])    # evals form1 and form2 lazily
+#   (and [form...])             # both ops are short-circuiting
+#   (or [form...])              # and eval forms lazily
+#
+# All boolean functions and the IF statement follow the Perl
+# notion of truth.
+pp()
+{
+  if [[ ! -f "$tdn/pp.pl" ]]; then
+    cat << 'EOF' > "$tdn/pp.pl" # perl-mode
+use strict;
+use warnings qw( FATAL all );
+use List::Util qw( reduce );
+
+# hash mapping symbols to their values (aka. obarray)
+our %vars = ();
+
+# statement stack consisting of triples that describe the
+# execution and parse state of the currently executing if
+# statements and their branches:
+#
+#   [ <branch-executing>, <true-branch-seen>, <else-branch-seen> ]
+our @ststack = ();
+
+my %FUNCS = (
+  'symbol'  => sub { $vars{$_[0]} },
+  'defined' => sub { defined( $_[0] ) },
+  'equal'   => sub { $_[0] eq $_[1] },
+  'not'     => sub { ! $_[0] },
+  'if'      => sub { ef( $_[0] ) ? ef( $_[1] ) : ef( $_[2] ) },
+  # use reduce instead of all or any since the latter do not
+  # return the last or first, respectively, trueish value, but
+  # plain one instead
+  'and'     => sub { reduce { $a && ef( $b ) } ( 1, @_ ) },
+  'or'      => sub { reduce { $a || ef( $b ) } ( 0, @_ ) },
+);
+
+my %SFORMS = (
+  'if'  => 1,
+  'and' => 1,
+  'or'  => 1,
+);
+
+my %STMTS = (
+  'IF' => sub {
+    if ( (scalar( @ststack ) == 0) ||
+         ($ststack[-1]->[0]) ) {
+      my $v = ef( $_[0] );
+      push( @ststack, [ $v, $v, 0 ] );
+    }
+    else {
+      # inherit non-executing status of the parent branch to all
+      # branches of the current if statement
+      push( @ststack, [ 0, 1, 0 ] );
+    }
+  },
+  'ELSIF' => sub {
+    if    ( (scalar( @ststack ) == 0) ||
+            ($ststack[-1]->[2]) ) {
+      die "syntax error (extra ELSIF)";
+    }
+    elsif ( ($ststack[-1]->[1]) ) {
+      $ststack[-1]->[0] = 0;
+    }
+    else {
+      my $v = ef( $_[0] );
+      $ststack[-1]->[0] = $v;
+      $ststack[-1]->[1] = $v;
+    }
+  },
+  'ELSE' => sub {
+    if    ( (scalar( @ststack ) == 0) ||
+            ($ststack[-1]->[2]) ) {
+      die "syntax error (extra ELSE)";
+    }
+    elsif ( ($ststack[-1]->[1]) ) {
+      $ststack[-1]->[0] = 0;
+      $ststack[-1]->[2] = 1;
+    }
+    else {
+      $ststack[-1]->[0] = 1;
+      $ststack[-1]->[2] = 1;
+    }
+  },
+  'END' => sub {
+    if ( (scalar( @ststack ) == 0) ) {
+      die "syntax error (extra END)";
+    }
+    else {
+      pop( @ststack );
+    }
+  },
+
+  'INCLUDE' => sub { process( ef( $_[0] ) )     if tx() },
+  'CALL'    => sub { ef( $_[0] )                if tx() },
+  'SET'     => sub { $vars{$_[0]} = ef( $_[1] ) if tx() },
+  'UNSET'   => sub { delete( $vars{$_[0]} )     if tx() },
+  'GET'     => sub { print( ef( $_[0] ) // "" ) if tx() },
+);
+
+my $STMTRE;
+{
+  my @fcstack;
+  $STMTRE = qr{
+    (?&stmt)                              (?{ die "syntax error (fcstack)" if @fcstack; $^R })
+
+    (?(DEFINE)
+      (?<stmt>    (?:IF\s++(?&form)       (?{ [ "IF", $^R ] })|
+                     ELSIF\s++(?&form)    (?{ [ "ELSIF", $^R ] })|
+                     ELSE                 (?{ [ "ELSE" ] })|
+                     END                  (?{ [ "END" ] })|
+                     INCLUDE\s++(?&form)  (?{ [ "INCLUDE", $^R ] })|
+                     CALL\s++(?&form)     (?{ [ "CALL", $^R ] })|
+                     SET\s++(?<s>(?&SYMBOL))\s*+=\s*+(?&form)
+                                          (?{ [ "SET", $+{'s'}, $^R ] })|
+                     UNSET\s++(?<s>(?&SYMBOL))
+                                          (?{ [ "UNSET", $+{'s'} ] })|
+                     GET\s++(?&form)      (?{ [ "GET", $^R ] })|
+                     # ensure malformed statements are not parsed
+                     # as forms to avoid confusing error messages
+                     (?:IF|ELSIF|INCLUDE|CALL|SET|UNSET|GET)\s
+                                          (?{ die "syntax error (statement)" })|
+                     (?&form)             (?{ [ "GET", $^R ] })))
+
+      (?<form>    (?:(?&NUMBER)|(?&STRING)|(?&SYMBOL)|(?&fcall)))
+
+      (?<fcall>   \(\s*+
+                     (?&FSYMBOL)          (?{ push( @fcstack, [ $^R ] ) })
+                     (?:\s++ (?&form)     (?{ push( @{$fcstack[-1]}, $^R ) }))*+
+                  \s*+\)                  (?{ pop( @fcstack ) }))
+
+      (?<NUMBER>  ([+-]?\d++)             (?{ $^N }))
+      (?<STRING>  "((?:\\.|[^\"\\]+)*+)"  (?{ $^N =~ s{\\(.)}{$1}gr }))
+      (?<SYMBOL>  ([A-Z_a-z]\w*+)         (?{ sc( $^N ); [ "symbol", $^N ] }))
+      (?<FSYMBOL> ([A-Z_a-z]\w*+)         (?{ fc( $^N ); $^N }))
+    )
+  }x;
+}
+
+# checks the specified function symbol
+sub fc { exists( $FUNCS{$_[0]} ) or die "syntax error (fsymbol \"$_[0]\")" }
+
+# checks the specified symbol
+sub sc { exists( $STMTS{$_[0]} ) and die "syntax error (symbol \"$_[0]\")" }
+
+# returns whether to execute template text, statements, and
+# forms, depending on whether the surrounding if statement branch
+# (if any) is executing
+sub tx { scalar( @ststack ) == 0 || $ststack[-1]->[0] }
+
+# executes the specified statement with the specified arguments
+sub xs { &{$STMTS{$_[0]}}( @_[1 .. $#_] ) }
+
+# evaluates the specified form
+sub ef { # atom
+         (! ref( $_[0] )) ?
+             $_[0] :
+         # special form
+         (exists( $SFORMS{$_[0]->[0]} )) ?
+             &{$FUNCS{$_[0]->[0]}}( @{$_[0]}[1 .. $#{$_[0]}] ) :
+         # else
+             &{$FUNCS{$_[0]->[0]}}( map { ef( $_ ) } @{$_[0]}[1 .. $#{$_[0]}] ) }
+
+# processes the specified input file template
+sub process
+{
+  my ( $ifn ) = @_;
+
+  open( my $if, "<", $ifn ) or die "input file error (\"$ifn\", \l$!)";
+
+  local @ststack = ();
+  local $_;
+
+  while ( defined( $_ = readline( $if ) ) ) {
+    # token state, one of: 0 == in regular text; 1 == after "[%";
+    # 2 == after statement, before "%]"
+    my $state = 0;
+    while ( 1 ) {
+      if    ( ($state == 0) && /\G\[\%#.*?\%\]/gc )  { last if /-\%\]\G$/gc }
+      elsif ( ($state == 0) && /\G\[\%#.*$/gc )      { die "syntax error (missing \%\])" }
+      elsif ( ($state == 0) && /\G\[\%\s*+/gc )      { $state = 1 }
+      elsif ( ($state == 0) && /\G(.+?)(?=\[\%)/gc ) { print( $1 ) if tx() }
+      elsif ( ($state == 0) && /\G.*\%\]/ )          { die "syntax error (extra \%\])" }
+      elsif ( ($state == 0) && /\G(.*)$/ )           { print( $1, "\n" ) if tx(); last }
+      elsif ( ($state == 1) && /\G$STMTRE/gc )       { xs( @{$^R} ); $state = 2 }
+      elsif ( ($state == 2) && /\G\s*+-?+\%\]/gc )   { $state = 0; last if /-\%\]\G$/gc }
+      else                                           { die "syntax error (state $state)" }
+    }
+  }
+
+  die "syntax error (missing END)" if @ststack;
+
+  close( $if );
+}
+
+# process commandline parameters
+while ( scalar( @ARGV ) > 2 ) {
+  $_ = shift( @ARGV );
+  if ( /\A([A-Z_a-z]\w*+)(?:=(.*+))?\z/ ) {
+    $vars{$1} = $2 // "";
+  }
+  else {
+    die "invalid template variable (\"$_\")";
+  }
+}
+
+# process top-level input file
+my ( $ifn, $ofn ) = ( @ARGV );
+my @is = stat( $ifn )     or die "input file error  (\"$ifn\", \l$!)";
+open( STDOUT, ">", $ofn ) or die "output file error (\"$ofn\", \l$!)";
+process( $ifn );
+utime( @is[8, 9], $ofn )  or die "output file error (\"$ofn\", \l$!)";
+EOF
+  fi
+
+  perl "$tdn/pp.pl" "${ppvars[@]}" "$@"
+}
+
+#}}}
+
 #{{{ versdesc
 
 # reads the Markdown on STDIN and searches for the specified
@@ -452,7 +754,7 @@ EOF
 versdesc()
 {
   if [[ ! -f "$tdn/versdesc.awk" ]]; then
-    cat << 'EOF' > "$tdn/versdesc.awk"
+    cat << 'EOF' > "$tdn/versdesc.awk" # awk-mode
 BEGIN {
   invhistp = 0; invdescp = 0; versfndp = 0;
 }
@@ -510,7 +812,7 @@ EOF
 amomd()
 {
   if [[ ! -f "$tdn/amomd.awk" ]]; then
-    cat << 'EOF' > "$tdn/amomd.awk"
+    cat << 'EOF' > "$tdn/amomd.awk" # awk-mode
 BEGIN {
   insectp = 0; sectfndp = 0;
 }
@@ -571,7 +873,7 @@ EOF
 md2amohtml()
 {
   if [[ ! -f "$tdn/xml2amohtml.xslt" ]]; then
-    cat << 'EOF' > "$tdn/xml2amohtml.xslt"
+    cat << 'EOF' > "$tdn/xml2amohtml.xslt" # nxml-mode
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output omit-xml-declaration="yes" indent="no"/>
@@ -706,7 +1008,7 @@ amojwt()
 zipcrx3()
 {
   if [[ ! -f "$tdn/zipcrx3.py" ]]; then
-    cat << 'EOF' > "$tdn/zipcrx3.py"
+    cat << 'EOF' > "$tdn/zipcrx3.py" # python-mode
 import io
 import os
 import struct
@@ -861,6 +1163,11 @@ fi
 
 #{{{ initialization
 
+# add add-on metadata to global template variables
+for mdkey in "${!ADDON_METADATA[@]}"; do
+  ppvars+=( "addon_${mdkey}"="${ADDON_METADATA[$mdkey]}" )
+done
+
 # determine and verify current CI
 localp=
 case ${CI_NAME-local} in
@@ -939,6 +1246,10 @@ elif [[ $localp == 0 ]] &&
 else
   error "Invalid version \"$uversion\" specified."
 fi
+ppvars+=(
+  relmode="$relmode"
+  version="$version"
+)
 
 # prepare for cleanup
 cutrap=':'
@@ -980,6 +1291,14 @@ else
   cleanp=0
 fi
 
+# determine name of current branch
+if ! branch=$( git rev-parse --abbrev-ref=strict HEAD ); then
+  error "Cannot determine name of current branch."
+fi
+ppvars+=(
+  branch="$branch"
+)
+
 #}}}
 
 #{{{ target check
@@ -993,7 +1312,7 @@ if [[ ($relmode != "draft") &&
 fi
 if [[ ($localp == 1) &&
       ($relmode == "final") &&
-      ($( git rev-parse --abbrev-ref HEAD ) != "main") ]]; then
+      ($branch != "main") ]]; then
   error "Cannot process non-main branch."
 fi
 
@@ -1001,26 +1320,6 @@ fi
 if [[ $relmode != "draft" ]] &&
    ! reuse lint; then
   error "Cannot process unclean reuse status."
-fi
-
-# create a comment-free version of the add-on manifest, since jq
-# objects to comments
-sed '\@^ *//@d' "src/manifest.json" > "$tdn/manifest.json"
-
-# ensure a sane manifest version
-mfversion=$( jq -r '.manifest_version' "$tdn/manifest.json" )
-if [[ $mfversion != 2 ]]; then
-  error "Cannot process manifest version \"$mfversion\"."
-fi
-
-# ensure presence of the release version in the manifest for
-# non-draft releases.  For draft releases, we modify the manifest
-# in target "build".
-if [[ $relmode != "draft" ]]; then
-  mversion=$( jq -r '.version' "$tdn/manifest.json" )
-  if [[ $mversion != "$version" ]]; then
-    error "Cannot find version \"$version\" in manifest."
-  fi
 fi
 
 # ensure presence of a description for the release version in the
@@ -1031,12 +1330,9 @@ if [[ $relmode != "draft" ]] &&
   error "Cannot find version \"$version\" in version history."
 fi
 
-# ensure presence of the AMO add-on ID in the manifest and
-# determine it in an URI-encoded way
-if ! amoextid=$( jq -er '.browser_specific_settings.gecko.id |
-                         if . then @uri else . end' \
-                        "$tdn/manifest.json" ); then
-  error "Cannot find AMO add-on ID in manifest."
+# convert AMO add-on ID to an URI-encoded string
+if ! amoextid=$( jq -Rr '@uri' 0<<<"${ADDON_METADATA['amo_id']}" ); then
+  error "Cannot URI-encode AMO add-on ID."
 fi
 
 [[ $target == "check" ]] && exit 0
@@ -1062,48 +1358,24 @@ rm -f src/copy-on-select-2-64.png
 
 # copy the sources to separate build directories, one for the XPI
 # and one for the CRX
-cp -Rp src "$bdn/xpi"
-cp -Rp src "$bdn/crx"
-
-# for the CRX create the service worker from the background
-# scripts by concatenating all these and storing the result using
-# the name of the last background script.  This does not take
-# care about removing former background scripts that otherwise
-# would not be required in the CRX any more.
-eval "declare -a bgsns=(
-  $( jq -r '.background.scripts[] | @sh' "$tdn/manifest.json" )
-)"
-cat "${bgsns[@]/#/src/}" > "$bdn/crx/${bgsns[-1]}"
-
-# modify the add-on manifest as needed:
-#
-# - For draft releases set the add-on version in the manifest to
-#   the release version we have determined during initialization;
-#
-# - for the CRX use a version 3 manifest and simplify the
-#   background scripts to a service worker.
-#
-# Process license header and comment-free manifest separately
-# from each other to not upset jq.
-for addontype in "xpi" "crx"; do
-  {
-    sed -n '1,/^$/p' src/manifest.json;
-    sed '1,/^$/d; \@^ *//@d' src/manifest.json |
-    if [[ $relmode == "draft" ]]; then
-      jq '.version = "'"$version"'"'
-    else
-      cat
-    fi |
-    if [[ $addontype == "crx" ]]; then
-      jq '.manifest_version = 3 |
-          .background = {
-            "service_worker": .background.scripts[-1]
-          }'
-    else
-      cat
-    fi
-  } > "$bdn/$addontype/manifest.json"
-done
+ppv=( addontype="xpi" )
+mkdir "$bdn/xpi"
+pp "${ppv[@]}" "src/background.js"     "$bdn/xpi/background.js"
+cp             "src/common.js"         "$bdn/xpi/common.js"
+cp             "src/copy-on-select.js" "$bdn/xpi/copy-on-select.js"
+pp "${ppv[@]}" "src/manifest.json"     "$bdn/xpi/manifest.json"
+cp             "src/options.html"      "$bdn/xpi/options.html"
+cp             "src/options.js"        "$bdn/xpi/options.js"
+cp             "src/question-mark.svg" "$bdn/xpi/question-mark.svg"
+ppv=( addontype="crx" )
+mkdir "$bdn/crx"
+cp             "src/common.js"         "$bdn/crx/common.js"
+cp             "src/copy-on-select.js" "$bdn/crx/copy-on-select.js"
+pp "${ppv[@]}" "src/manifest.json"     "$bdn/crx/manifest.json"
+cp             "src/options.html"      "$bdn/crx/options.html"
+cp             "src/options.js"        "$bdn/crx/options.js"
+cp             "src/question-mark.svg" "$bdn/crx/question-mark.svg"
+pp "${ppv[@]}" "src/service-worker.js" "$bdn/crx/service-worker.js"
 
 # create the add-on icons from the SVG.  At least Firefox does
 # not seem to use these for add-ons published on AMO, though.
@@ -1197,7 +1469,7 @@ if [[ $relmode != "draft" ]]; then
 
   rsp=$(
     # define the GraphQL query ...
-    cat << '    EOF' |
+    cat << '    EOF' | # graphql-mode
     query
     repoId( $repoName: String! ) {
       me {
@@ -1236,7 +1508,7 @@ if [[ $relmode != "draft" ]]; then
   for file in "$bdn/$xpibname" "$bdn/$crxbname"; do
     rsp=$(
       # define the GraphQL query ...
-      cat << '      EOF' |
+      cat << '      EOF' | # graphql-mode
       mutation
       upload( $repoId: Int!, $revspec: String!, $file: Upload! ) {
         uploadArtifact( repoId: $repoId, revspec: $revspec, file: $file ) {
@@ -1296,6 +1568,11 @@ fi
 # unconditionally update the add-on metadata for non-draft
 # releases
 if [[ $relmode != "draft" ]]; then
+  mdopts=()
+  for mdkey in "${!ADDON_METADATA[@]}"; do
+    mdopts+=( --arg "addon_${mdkey}" "${ADDON_METADATA[$mdkey]}" )
+  done
+
   lcdopts=()
   # at least here we need the effect of Bash option "lastpipe"
   sed -rn 's/^# Description (.+)$/\1/p' amo-metadata.md |
@@ -1314,7 +1591,7 @@ if [[ $relmode != "draft" ]]; then
   rsp=$( amomd "Non-Description Metadata" < amo-metadata.md |
          jq --null-input --compact-output                       \
             --from-file /dev/stdin                              \
-            "${lcdopts[@]}" |
+            "${mdopts[@]}" "${lcdopts[@]}" |
          curlx --silent --fail-with-body                        \
                -XPATCH "$AMO_ADDONS_API_URL/addon/$amoextid/"   \
                --pushx                                          \

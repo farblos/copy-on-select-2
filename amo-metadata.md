@@ -42,13 +42,13 @@ The non-description JSON metadata can refer to jq variable
     {
       "categories":      [ "other" ],
       "description":     { "en-US": $desc_en_US },
-      "homepage":        { "en-US": "https://sr.ht/~jschmidt/copy-on-select-2" },
+      "homepage":        { "en-US": $addon_homepage },
       "is_disabled":     false,
       "is_experimental": false,
-      "name":            { "en-US": "Copy On Select 2" },
-      "slug":            "copy-on-select-2",
-      "summary":         { "en-US": "A productivity tool which copies selected text to the clipboard automatically" },
-      "support_email":   { "en-US": "~jschmidt/copy-on-select-2@lists.sr.ht" },
+      "name":            { "en-US": $addon_name },
+      "slug":            $addon_slug,
+      "summary":         { "en-US": $addon_desc },
+      "support_email":   { "en-US": $addon_support },
       "tags":            []
     }
 
