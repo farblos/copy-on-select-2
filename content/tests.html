@@ -16,9 +16,25 @@
   <title>Copy on Select 2 Tests</title>
   <meta charset="utf-8"/>
   <link rel="stylesheet" href="../../sourcehut-pages/content/styles.css"/>
+  <link rel="stylesheet" href="styles.css"/>
   <link rel="icon" type="image/png" sizes="16x16" href="copy-on-select-2-16.png"/>
   <link rel="icon" type="image/png" sizes="32x32" href="copy-on-select-2-32.png"/>
   <link rel="icon" type="image/png" sizes="48x48" href="copy-on-select-2-48.png"/>
+  <style>
+    ul.test {
+      padding-left: 0px;
+      list-style-position: inside;
+    }
+    ul.test > li {
+      margin-top: 1rem;
+    }
+    ul.test > li:first-of-type {
+      margin-top: 0rem;
+    }
+    ul.test > li:last-of-type {
+      margin-bottom: 0rem;
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -440,7 +456,7 @@ In thunder, lightning, or in rain?</textarea>
     <p>
     When shall we three meet again
     </p>
-    <table style="margin: 0px; border-collapse: collapse; width: max-content"><tbody>
+    <table style="width: max-content; margin: 0px; border-collapse: collapse"><tbody>
     <tr><td style="padding-left: 0px">In thunder,</td><td>lightning,</td><td style="padding-right: 0px">or in rain?</td></tr>
     </tbody></table>
     </section>

@@ -1,0 +1,27 @@
+/* styles.css - copy-on-select-2 content style sheet.
+ *
+ * Copyright (C) 2025 Jens Schmidt
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-FileCopyrightText: 2025 Jens Schmidt
+ *
+ * SPDX-License-Identifier: MPL-2.0 */
+
+/* simulate the look of a textarea containing two lines.  Good
+ * enough for us on FF. */
+.twolinebox {
+  height: calc( 2rem * 1.2 );
+  border: 1px solid gray;
+  padding: 3px;
+}
+
+textarea.copy {
+  resize: none;
+}
+textarea.paste {
+  height: 100%;
+  resize: none;
+}

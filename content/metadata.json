@@ -49,6 +49,7 @@
     { "file": "tests.html" },
     { "file": "body-change.html" },
     { "file": "cancel-event.html" },
-    { "file": "simple.html" }
+    { "file": "simple.html" },
+    { "file": "styles.css" }
   ]
 }
