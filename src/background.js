@@ -54,7 +54,7 @@ async function showOnboardingPage( details )
     { url: "https://jschmidt.srht.site/copy-on-select-2/onboarding.html" } );
 [% ELSE -%]
   await browser.tabs.create(
-    { url: "https://jschmidt.srht.site/drafts/copy-on-select-2/onboarding.html" } );
+    { url: "https://jschmidt.srht.site/draft/copy-on-select-2/onboarding.html" } );
 [% END -%]
 }
 
