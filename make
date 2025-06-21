@@ -470,9 +470,7 @@ EOF
 # as useful information gets available during the initialization.
 declare -a ppvars=()
 
-# Synopsis: pp template-variable[=value] input-file-template output-file
-#
-# Processes the specified input file template, writing the
+# processes the specified input file template, writing the
 # resulting text to the specified output file.  Uses the global
 # template variables and any additional variables specified
 # before the input file template to control and instantiate the
@@ -526,6 +524,9 @@ declare -a ppvars=()
 #
 # All boolean functions and the IF statement follow the Perl
 # notion of truth.
+#
+# Parameters:
+#   [template-variable[=value]...] input-file-template output-file
 pp()
 {
   if [[ ! -f "$tdn/pp.pl" ]]; then
@@ -740,6 +741,100 @@ EOF
 
 #}}}
 
+#{{{ vnu
+
+# processes files below the current working directory fulfilling
+# the specified find conditions using v.Nu with the specified
+# v.Nu arguments, which must start with one of "--css", "--html",
+# "--svg", or "--xml" to be recognized as such.
+#
+# Parameters:
+#   [find-condition...] [(--css|--html|--svg|--xml) [vnu-arg...]]
+vnu0()
+{
+  local -a findconds=()
+  local -a vnuargs=()
+
+  # separate find conditions from v.Nu arguments
+  while [[ $# -gt 0 ]]; do
+    if [[ $1 =~ ^--(css|html|svg|xml)$ ]]; then
+      break
+    else
+      findconds+=( "$1" )
+      shift 1
+    fi
+  done
+  vnuargs=( "$@" )
+
+  find . \( "${pruneconds[@]}" \) -prune -o \
+         \( "${findconds[@]}"  \) -print0 |
+  xargs --null --no-run-if-empty \
+  java -jar "$jfn" --Werror "${vnuargs[@]}" 2>&1 |
+  # simplify URLified, absolute file names
+  sed 's@^"file:[^"]*/\./\([^"]*\)":@\1:@'
+}
+
+# validates HTML files, SVGs, and CSS style sheets below the
+# current working directory using v.Nu from the specified v.Nu
+# jar and using the specified temporary directory to store
+# intermediate results.  Does not validate git-ignored files.
+# Returns whether validation was successful.
+#
+# Parameters:
+#   vnu-jar-file temporary-directory
+vnu()
+{
+  local jfn=$1
+  local tdn=$2
+
+  if [[ ! $jfn = /* ]]; then
+    jfn="$PWD/$jfn"
+  fi
+
+  # determine paths to prune
+  local -a pruneconds=( -path "./.git" )
+  local ppn
+  git ls-files -z --ignored --others --directory --exclude-standard |
+  while IFS='' read -d '' ppn; do
+    pruneconds+=( -o -path "./${ppn%/}" )
+  done
+
+  local failed=0
+  local failedhtml=0
+
+  # check HTML files as, well, HTML files
+  vnu0 -name '*.html' \
+       --html --filterpattern '^Trailing slash on void elements has no effect and interacts badly with unquoted attribute values\.$' ||
+  { failed=1; failedhtml=1; }
+
+  # check HTML files as XML, which requires quoting XML-special
+  # characters in script and style blocks
+  find . \( "${pruneconds[@]}" \) -prune -o \
+         \( -name '*.html'     \) -print0 |
+  cpio --null --quiet --pass-through --make-directories "$tdn/vnu"
+  find "$tdn/vnu" -type f -print0 |
+  xargs --null --no-run-if-empty \
+  sed -r -i '
+  \@^ *<(script|style)>$@,\@^ *</(script|style)>$@ {
+    \@^ *<(script|style)>$@ b; \@^ *</(script|style)>$@ b;
+    s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g;
+  }'
+  [[ $failedhtml = 1 ]] ||
+  ( cd "$tdn/vnu" && vnu0 -type f --xml ) ||
+  { failed=1; failedhtml=1; }
+
+  vnu0 -name '*.svg' \
+       --svg --filterpattern '^This validator does not validate RDF\. RDF subtrees go unchecked\.$' ||
+  failed=1
+
+  vnu0 -name '*.css' --css ||
+  failed=1
+
+  return $failed
+}
+
+#}}}
+
 #{{{ versdesc
 
 # reads the Markdown on STDIN and searches for the specified
@@ -944,7 +1039,7 @@ md2amohtml()
 EOF
   fi
 
-  # execute above stylesheet on whatever the Markdown converter
+  # execute above style sheet on whatever the Markdown converter
   # produces.  Be careful not to introduce extra newlines in the
   # intermediate XML.
   {
@@ -1274,6 +1369,11 @@ vversion="v$version"
 xpibname="${ADDON_SLUG}-unsigned-$version.xpi"
 crxbname="${ADDON_SLUG}-$version.crx"
 
+# convert AMO add-on ID to an URI-encoded string
+if ! amoextid=$( jq -Rr '@uri' 0<<<"${ADDON_METADATA['amo_id']}" ); then
+  error "Cannot URI-encode AMO add-on ID."
+fi
+
 # determine whether our working tree is clean (always consider
 # non-local working trees clean)
 cleanp=
@@ -1322,17 +1422,19 @@ if [[ $relmode != "draft" ]] &&
   error "Cannot process unclean reuse status."
 fi
 
+# validate HTML files, SVGs, and CSS style sheets with v.Nu
+if [[ ($localp == 1) &&
+      (-f "collateral/vnu.jar") ]] &&
+   ! vnu "collateral/vnu.jar" "$tdn"; then
+  error "Cannot process v.Nu validation errors."
+fi
+
 # ensure presence of a description for the release version in the
 # readme for non-draft releases and extract it as release
 # description
 if [[ $relmode != "draft" ]] &&
    ! versdesc "$version" < README.md > "$tdn/reldesc.md"; then
   error "Cannot find version \"$version\" in version history."
-fi
-
-# convert AMO add-on ID to an URI-encoded string
-if ! amoextid=$( jq -Rr '@uri' 0<<<"${ADDON_METADATA['amo_id']}" ); then
-  error "Cannot URI-encode AMO add-on ID."
 fi
 
 [[ $target == "check" ]] && exit 0
