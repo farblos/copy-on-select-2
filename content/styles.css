@@ -10,6 +10,10 @@
  *
  * SPDX-License-Identifier: MPL-2.0 */
 
+:root {
+  --logo-color: #b5d5ff;
+}
+
 /* simulate the look of a textarea containing two lines.  Good
  * enough for us on FF. */
 .twolinebox {
