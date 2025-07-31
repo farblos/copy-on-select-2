@@ -787,7 +787,7 @@ vnu()
   local jfn=$1
   local tdn=$2
 
-  if [[ ! $jfn = /* ]]; then
+  if [[ $jfn != /* ]]; then
     jfn="$PWD/$jfn"
   fi
 
@@ -819,7 +819,7 @@ vnu()
     \@^ *<(script|style)>$@ b; \@^ *</(script|style)>$@ b;
     s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g;
   }'
-  [[ $failedhtml = 1 ]] ||
+  [[ $failedhtml == 1 ]] ||
   ( cd "$tdn/vnu" && vnu0 -type f --xml ) ||
   { failed=1; failedhtml=1; }
 
