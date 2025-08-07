@@ -34,6 +34,14 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <style>
+    :root { color: black; }
+    @media ( prefers-color-scheme: dark ) {
+      :root { color: white; }
+    }
+    path { stroke: none; fill: currentcolor; }
+    text { stroke: none; fill: currentcolor; }
+  </style>
   <rect
     style="fill:#b5d5ff"
     width="96.59961"
@@ -53,12 +61,12 @@
       y="120.0487">2</tspan>
   </text>
   <path
-    style="stroke:#000000;stroke-width:4.680567;fill:none"
+    style="stroke:currentcolor;stroke-width:4.680567;fill:none"
     d="M 96.59961,11.30842 96.59961,73.31506" />
   <path
-    style="stroke:#000000;stroke-width:4.680567;fill:none"
+    style="stroke:currentcolor;stroke-width:4.680567;fill:none"
     d="M 82.55796,1.947269 96.59961,11.30842 110.6412,1.947269" />
   <path
-    style="stroke:#000000;stroke-width:4.680567;fill:none"
+    style="stroke:currentcolor;stroke-width:4.680567;fill:none"
     d="M 82.55796,82.67622 96.59961,73.31506 110.6412,82.67622" />
 </svg>

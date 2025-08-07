@@ -12,99 +12,100 @@
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head>
-    <title>Options</title>
-    <meta charset="utf-8"/>
-    <!-- define metadata element "color-scheme" to let browsers
-      == automatically adapt this option page to the overall
-      == color scheme, see [1].
-      ==
-      == The media query on "prefers-color-scheme: dark" further
-      == below is a work-around for some FF versions where this
-      == metadata element alone is not sufficient.  See [2] and
-      == [3].
-      ==
-      == [1]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages
-      == [2]: https://bugzilla.mozilla.org/show_bug.cgi?id=1888866#cs-10
-      == [3]: https://github.com/farblos/copy-on-select-2/issues/15
-      -->
-    <meta name="color-scheme" content="light dark"/>
-    <script src="common.js" defer=""></script>
-    <script src="options.js" defer=""></script>
-    <style>
-      @media ( prefers-color-scheme: dark ) {
-        html, body {
-          background: Canvas;
-          color: CanvasText;
-        }
+<head>
+  <meta charset="utf-8"/>
+  <!-- define metadata element "color-scheme" to let browsers
+    == automatically adapt this option page to the overall color
+    == scheme, see [1].
+    ==
+    == The media query on "prefers-color-scheme: dark" further
+    == below is a work-around for some FF versions where this
+    == metadata element alone is not sufficient.  See [2] and
+    == [3].
+    ==
+    == [1]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages
+    == [2]: https://bugzilla.mozilla.org/show_bug.cgi?id=1888866#cs-10
+    == [3]: https://github.com/farblos/copy-on-select-2/issues/15
+    -->
+  <meta name="color-scheme" content="light dark"/>
+
+  <title>Options</title>
+
+  <script src="common.js" defer=""></script>
+  <script src="options.js" defer=""></script>
+  <style>
+    @media ( prefers-color-scheme: dark ) {
+      html, body {
+        background: Canvas;
+        color: CanvasText;
       }
+    }
 
-      /* add body margins or otherwise elements near the option
-       * page margins and/or their focus indicators might not get
-       * fully displayed in FF */
-      body {
-        margin-right: 4px;
-        margin-left: 4px;
-      }
+    /* add body margins or otherwise elements near the option
+     * page margins and/or their focus indicators might not get
+     * fully displayed in FF */
+    body {
+      margin-right: 4px;
+      margin-left: 4px;
+    }
 
-      p {
-        margin-bottom: 0px;
-      }
-      p.error {
-        margin-top: 0px;
-        margin-left: 1rem;
-        color: red;
-      }
-      p.button-bar {
-        display: flex;
-        justify-content: space-between;
-        border-top: solid 1px;
-        padding-top: 1em;
-      }
+    p {
+      margin-bottom: 0px;
+    }
+    p.error {
+      margin-top: 0px;
+      margin-left: 1rem;
+      color: red;
+    }
+    p.button-bar {
+      display: flex;
+      justify-content: space-between;
+      border-top: solid 1px;
+      padding-top: 1em;
+    }
 
-      a.option-doc {
-        margin-left: 0.5ex;
-      }
-      a.option-doc > img {
-        width: 1em;
-        height: 1em;
-        margin-bottom: -0.1em;
-      }
-    </style>
-  </head>
+    a.option-doc {
+      margin-left: 0.5ex;
+    }
+    a.option-doc > img {
+      width: 1em;
+      height: 1em;
+      margin-bottom: -0.1em;
+    }
+  </style>
+</head>
+<body class="browser-style">
 
-  <body class="browser-style">
+  <!-- (sync-mark-all-options) -->
 
-    <!-- (sync-mark-all-options) -->
+  <p><strong>Generally Useful Options</strong></p>
+  <p>
+    <input id="in_input_elements" type="checkbox"/>
+    <!-- (sync-mark-in-input-elements) -->
+    <label for="in_input_elements">Copy-on-select in input elements</label>
+  </p>
 
-    <p><strong>Generally Useful Options</strong></p>
-    <p>
-      <input id="in_input_elements" type="checkbox"/>
-      <!-- (sync-mark-in-input-elements) -->
-      <label for="in_input_elements">Copy-on-select in input elements</label>
-    </p>
+  <p><strong>Experimental Options</strong></p>
+  <p>
+    <input id="use_native_copy" type="checkbox"/>
+    <!-- (sync-mark-use-native-copy) -->
+    <label for="use_native_copy">Use native copy command</label>
+  </p>
+  <p>
+    <input id="trim_triple_clicks" type="checkbox"/>
+    <!-- (sync-mark-trim-triple-clicks) -->
+    <label for="trim_triple_clicks">Trim triple-click paragraph selections</label>
+  </p>
+  <p>
+    <label for="multi_range_sep">Join multi-range selections with</label><br/>
+    <!-- (sync-mark-multi-range-sep) -->
+    <input id="multi_range_sep" type="text"/>
+  </p>
 
-    <p><strong>Experimental Options</strong></p>
-    <p>
-      <input id="use_native_copy" type="checkbox"/>
-      <!-- (sync-mark-use-native-copy) -->
-      <label for="use_native_copy">Use native copy command</label>
-    </p>
-    <p>
-      <input id="trim_triple_clicks" type="checkbox"/>
-      <!-- (sync-mark-trim-triple-clicks) -->
-      <label for="trim_triple_clicks">Trim triple-click paragraph selections</label>
-    </p>
-    <p>
-      <label for="multi_range_sep">Join multi-range selections with</label><br/>
-      <!-- (sync-mark-multi-range-sep) -->
-      <input id="multi_range_sep" type="text"/>
-    </p>
+  <p class="button-bar">
+    <input id="save"  type="button" value="Save"/>
+    <input id="reset" type="button" value="Reset"/>
+  </p>
 
-    <p class="button-bar">
-      <input id="save"  type="button" value="Save"/>
-      <input id="reset" type="button" value="Reset"/>
-    </p>
-
-  </body>
+</body>
 </html>
