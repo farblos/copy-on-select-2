@@ -372,7 +372,7 @@ In thunder, lightning, or in rain?</textarea>
     </section>
 
     <section class="twocolelt">
-    <h4>Dark Mode</h4>
+    <h4>Dark Theme</h4>
 
     <ul class="test">
     <li>Open the option page; execute
@@ -486,6 +486,37 @@ In thunder, lightning, or in rain?</textarea>
     </section>
 
     <div class="colfiller"></div>
+
+    <h3>Content Pages</h3>
+
+    <section class="twocolelt">
+    <h4>Dark Theme on Onboarding Page</h4>
+
+    <ul class="test">
+    <li>Open the onboarding page; execute
+    <pre>gsettings set org.gnome.desktop.interface color-scheme prefer-dark</pre>
+    and ensure that the page itself, the header icon, and the
+    favicon turn dark.</li>
+    <li>Then execute
+    <pre>gsettings set org.gnome.desktop.interface color-scheme default</pre>
+    and ensure that all of the above turn light again.</li>
+    </ul>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Dark Theme on Index Page</h4>
+
+    <ul class="test">
+    <li>Open the index page, referring to it without a
+    trailing <code>index.html</code> or slash; execute
+    <pre>gsettings set org.gnome.desktop.interface color-scheme prefer-dark</pre>
+    and ensure that the page itself, the header icon, and the
+    favicon turn dark.</li>
+    <li>Then execute
+    <pre>gsettings set org.gnome.desktop.interface color-scheme default</pre>
+    and ensure that all of the above turn light again.</li>
+    </ul>
+    </section>
 
     <h3>Random Test Notes</h3>
 
