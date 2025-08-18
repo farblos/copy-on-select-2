@@ -17,9 +17,10 @@
 /* simulate the look of a textarea containing two lines.  Good
  * enough for us on FF. */
 .twolinebox {
-  height: calc( 2rem * 1.2 );
+  height: calc( 2rem * 1.25 );
   border: 1px solid gray;
-  padding: 3px;
+  border-radius: 2px;
+  padding: 2.5px;
 }
 
 textarea.copy {

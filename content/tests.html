@@ -226,28 +226,22 @@ In thunder, lightning, or in rain?</textarea>
     <h4>Iframe Text (PASS)</h4>
 
     <!-- (sync-mark-min-version) -->
-    <p>(This test results in a FAIL on Firefox 78.  And I am not
-    going to document that otherwise or even work around it!)</p>
+    <p>(The iframe tests result in a FAIL on Firefox 78.  And I
+    am not going to document that otherwise or even work around
+    it!)</p>
 
     <iframe id="263b938c-81bb-11ef-87fb-2b8b688660ba"
             class="twolinebox"
             sandbox="" src="simple.html"></iframe>
     </section>
 
-    <!-- (sync-mark-min-version) -->
     <section class="twocolelt">
-    <h4>Non-Text (FAIL, non-FF-78 only)</h4>
+    <h4>Cross-Site Iframe Text (PASS)</h4>
 
-    <p>Select the following image.  Without native copy that
-    should clear the primary selection, but not the clipboard.
-    With native copy it should clear both.</p>
-
-    <!-- For the image to be selectable it must be embedded in a
-      == surrounding paragraph.  And to let the test fail, its
-      == alternative text must be empty, or otherwise the
-      == alternative text gets copied-on-select.  -->
-    <p><img width="64" height="64" alt=""
-            src="copy-on-select-2-notext.svg"/></p>
+    <iframe id="354b8ce4-7c72-11f0-9785-174099ef7173"
+            class="twolinebox"
+            sandbox=""
+            src="https://farblos.github.io/copy-on-select-2/simple.html"></iframe>
     </section>
 
     <section class="twocolelt">
@@ -268,6 +262,24 @@ In thunder, lightning, or in rain?</textarea>
 
     <p class="twolinebox" contenteditable=""></p>
     </section>
+
+    <!-- (sync-mark-min-version) -->
+    <section class="twocolelt">
+    <h4>Non-Text (FAIL, non-FF-78 only)</h4>
+
+    <p>Select the following image.  Without native copy that
+    should clear the primary selection, but not the clipboard.
+    With native copy it should clear both.</p>
+
+    <!-- For the image to be selectable it must be embedded in a
+      == surrounding paragraph.  And to let the test fail, its
+      == alternative text must be empty, or otherwise the
+      == alternative text gets copied-on-select.  -->
+    <p><img width="64" height="64" alt=""
+            src="copy-on-select-2-notext.svg"/></p>
+    </section>
+
+    <div class="colfiller"></div>
 
     <p class="flexsep"></p>
 
