@@ -10,11 +10,15 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
+[% IF (not (defined eslint)) -%]
 "use strict";
+[% ELSE -%]
+[% INCLUDE "src/common.js" -%]
+[% END -%]
 
 // maintains this add-on's options, possibly upgrades them,
 // hopefully before any other code of this add-on executes
-async function maintainAddOnOptions( details )
+async function maintainAddOnOptions( _details )
 {
   const oo = await loadOptions( true );
   const on = {};
@@ -22,6 +26,7 @@ async function maintainAddOnOptions( details )
 
   // determine current option set version, defaulting an absent
   // one to zero
+  /* eslint-disable-next-line no-unused-vars */
   const osvers = Object.hasOwn( oo, "_version" ) ? oo["_version"] : 0;
 
   // determine new option values from local storage, defaulting

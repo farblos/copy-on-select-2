@@ -10,7 +10,11 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
+[% IF (not (defined eslint)) -%]
 "use strict";
+[% ELSE -%]
+[% INCLUDE "src/common.js" -%]
+[% END -%]
 
 // loads the option values from local storage and prepares the
 // option page DOM accordingly.  Adds option documentation links

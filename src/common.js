@@ -80,8 +80,8 @@ async function saveOptions( ...args )
                  (typeof args[0] !== "boolean") ||
                  (! args.shift());
 
-  const oo  = args[0];
-  const or  = cooked ? null : args[1];
+  const oo = args[0];
+  const or = cooked ? null : args[1];
 
   // save the cooked options.  Again, treat anything fishy here
   // as an error.
@@ -164,3 +164,13 @@ const OPTION_METADATA = {
   },
 
 };
+
+[% IF (defined eslint) -%]
+// silence "no-unused-something" errors reported by ESLint
+// without introducing too many disabling directives, which have
+// their own drawbacks
+loadOptions();
+saveOptions();
+OPTION_VERSION;
+OPTION_METADATA;
+[% END -%]

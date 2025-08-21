@@ -15,15 +15,19 @@
 //
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 
+[% IF (not (defined eslint)) -%]
 "use strict";
+[% ELSE -%]
+[% INCLUDE "src/common.js" -%]
+[% END -%]
 
 const EMPTY_ARRAY = [];
 
 // The following classes provide an abstraction of the various
 // available selection types:
 //
-// - Selection - base class, used only as factory for one of the
-//   possible concrete classes
+// - COS2Selection - base class, used only as factory for one of
+//   the possible concrete classes
 //
 // - NoSelection - an absent or empty selection
 //
@@ -81,7 +85,7 @@ const EMPTY_ARRAY = [];
 //   to a string.  This requires "short-term" storage of
 //   selection information and method toString.
 
-class Selection
+class COS2Selection
 {
   static noSelection = null;
 
@@ -100,14 +104,14 @@ class Selection
               (typeof elt.selectionStart === "number") &&
               (typeof elt.selectionEnd   === "number") )
       return new InputElementSelection( elt );
-    else if ( Selection.noSelection )
-      return Selection.noSelection;
+    else if ( COS2Selection.noSelection )
+      return COS2Selection.noSelection;
     else
-      return Selection.noSelection = new NoSelection();
+      return COS2Selection.noSelection = new NoSelection();
   }
 }
 
-class NoSelection extends Selection
+class NoSelection extends COS2Selection
 {
   constructor()
   {
@@ -129,7 +133,7 @@ class NoSelection extends Selection
     return EMPTY_ARRAY;
   }
 
-  contains( e )
+  contains( _ )
   {
     return false;
   }
@@ -145,7 +149,7 @@ class NoSelection extends Selection
   }
 }
 
-class InputElementSelection extends Selection
+class InputElementSelection extends COS2Selection
 {
   _elt   = null;
 
@@ -207,7 +211,7 @@ class InputElementSelection extends Selection
   }
 }
 
-class PageSelection extends Selection
+class PageSelection extends COS2Selection
 {
   _sel       = null;
 
@@ -310,7 +314,7 @@ class CopyOnSelect
       try {
         await navigator.clipboard.writeText( s );
       }
-      catch ( e ) {
+      catch ( _ ) {
         // fall back to deprecated document.execCommand if
         // something fails, hoping it will pick the right
         // selection
@@ -341,7 +345,7 @@ class CopyOnSelect
     if ( (new URL( document.URL )).hostname === "docs.google.com" )
       return;
 
-    const sel = Selection.current( document, e );
+    const sel = COS2Selection.current( document, e );
 
     // we somewhat assume in the following that a non-collapsed
     // selection contains at least one non-collapsed range
@@ -443,7 +447,9 @@ class CopyOnSelect
       this.target.removeEventListener( "mouseup", this, false );
       this.target.removeEventListener( "mousedown", this, false );
     }
-    catch {}
+    catch {
+      // no-op
+    }
     this.target = document.body ||
                   document.documentElement ||
                   document ||
@@ -454,7 +460,9 @@ class CopyOnSelect
     try {
       this.observer.disconnect();
     }
-    catch {}
+    catch {
+      // no-op
+    }
     this.observer.observe( document, { childList: true } );
     if ( document.documentElement )
       this.observer.observe( document.documentElement, { childList: true } );

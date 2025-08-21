@@ -143,6 +143,10 @@
 #   trace available as possible.  This is implemented by means of
 #   functions pushx, popx, and curlx.
 #
+# - This script uses a locally available ESLint and/or v.Nu
+#   installation to validate JavaScript and/or other files,
+#   respectively.
+#
 # - Function pp features a simple yet powerful template processor
 #   inspired in syntax by the Perl Template Toolkit.  And Lisp.
 #
@@ -1422,6 +1426,24 @@ if [[ $relmode != "draft" ]] &&
   error "Cannot process unclean reuse status."
 fi
 
+# validate JavaScript files with ESLint.  Unfortunately, ESLint
+# only works in the context of a project, so cobble one up below
+# the temporary directory.
+if [[ ($localp == 1) &&
+      (-d "collateral/node_modules/eslint") ]]; then
+  esldn="$tdn/eslint"
+  mkdir "$esldn"
+  ln -s "$PWD/collateral/node_modules" "$esldn/node_modules"
+  cp          "eslint.config.mjs"      "$esldn/eslint.config.mjs"
+  pp eslint=1 "src/background.js"      "$esldn/background.js"
+  pp eslint=1 "src/common.js"          "$esldn/common.js"
+  pp eslint=1 "src/copy-on-select.js"  "$esldn/copy-on-select.js"
+  pp eslint=1 "src/options.js"         "$esldn/options.js"
+  if ! ( cd "$esldn" && npm exec eslint ); then
+    error "Cannot process ESLint validation errors."
+  fi
+fi
+
 # validate HTML files, SVGs, and CSS style sheets with v.Nu
 if [[ ($localp == 1) &&
       (-f "collateral/vnu.jar") ]] &&
@@ -1463,19 +1485,19 @@ rm -f src/copy-on-select-2-64.png
 ppv=( addontype="xpi" )
 mkdir "$bdn/xpi"
 pp "${ppv[@]}" "src/background.js"     "$bdn/xpi/background.js"
-cp             "src/common.js"         "$bdn/xpi/common.js"
-cp             "src/copy-on-select.js" "$bdn/xpi/copy-on-select.js"
+pp "${ppv[@]}" "src/common.js"         "$bdn/xpi/common.js"
+pp "${ppv[@]}" "src/copy-on-select.js" "$bdn/xpi/copy-on-select.js"
 pp "${ppv[@]}" "src/manifest.json"     "$bdn/xpi/manifest.json"
 cp             "src/options.html"      "$bdn/xpi/options.html"
-cp             "src/options.js"        "$bdn/xpi/options.js"
+pp "${ppv[@]}" "src/options.js"        "$bdn/xpi/options.js"
 cp             "src/question-mark.svg" "$bdn/xpi/question-mark.svg"
 ppv=( addontype="crx" )
 mkdir "$bdn/crx"
-cp             "src/common.js"         "$bdn/crx/common.js"
-cp             "src/copy-on-select.js" "$bdn/crx/copy-on-select.js"
+pp "${ppv[@]}" "src/common.js"         "$bdn/crx/common.js"
+pp "${ppv[@]}" "src/copy-on-select.js" "$bdn/crx/copy-on-select.js"
 pp "${ppv[@]}" "src/manifest.json"     "$bdn/crx/manifest.json"
 cp             "src/options.html"      "$bdn/crx/options.html"
-cp             "src/options.js"        "$bdn/crx/options.js"
+pp "${ppv[@]}" "src/options.js"        "$bdn/crx/options.js"
 cp             "src/question-mark.svg" "$bdn/crx/question-mark.svg"
 pp "${ppv[@]}" "src/service-worker.js" "$bdn/crx/service-worker.js"
 
