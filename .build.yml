@@ -45,6 +45,13 @@ oauth:
   git.sr.ht/REPOSITORIES:RO
   meta.sr.ht/PROFILE:RO
 
+submitter:
+  git.sr.ht:
+    enabled: true
+    allow-refs:
+      - "refs/heads/main"
+      - "refs/tags/*"
+
 tasks:
   - make: |
       # if this is a push of a release tag, then determine release
