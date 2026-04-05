@@ -747,21 +747,43 @@ EOF
 
 #{{{ vnu
 
+# array of v.Nu types ("--css", "--html", "--svg", or "--xml"),
+# each followed by zero or more v.Nu filter patterns to be
+# applied for validations of files having that type
+VNU_FILTER_PATTERNS=(
+  --css
+
+  --html
+  '^Trailing slash on void elements has no effect and interacts badly with unquoted attribute values\.$'
+  $'^The heading \u201ch\d\u201d \(with computed level \d\) follows the heading \u201ch\d\u201d \(with computed level \d\), skipping \d heading level\.$'
+
+  --svg
+  '^This validator does not validate RDF\. RDF subtrees go unchecked\.$'
+
+  --xml
+  $'^The heading \u201ch\d\u201d \(with computed level \d\) follows the heading \u201ch\d\u201d \(with computed level \d\), skipping \d heading level\.$'
+)
+
 # processes files below the current working directory fulfilling
 # the specified find conditions using v.Nu with the specified
-# v.Nu arguments, which must start with one of "--css", "--html",
-# "--svg", or "--xml" to be recognized as such.
+# v.Nu arguments, which must start with one of the v.Nu types
+# "--css", "--html", "--svg", or "--xml" to be recognized as
+# such.  This function prepends v.Nu filter patterns to the
+# arguments according to type and constant VNU_FILTER_PATTERNS.
 #
 # Parameters:
 #   [find-condition...] [(--css|--html|--svg|--xml) [vnu-arg...]]
 vnu0()
 {
   local -a findconds=()
+  local vnutype
   local -a vnuargs=()
 
-  # separate find conditions from v.Nu arguments
+  # separate find conditions from v.Nu type and arguments
   while [[ $# -gt 0 ]]; do
     if [[ $1 =~ ^--(css|html|svg|xml)$ ]]; then
+      vnutype=$1
+      shift 1
       break
     else
       findconds+=( "$1" )
@@ -770,10 +792,27 @@ vnu0()
   done
   vnuargs=( "$@" )
 
+  # determine filter patterns corresponding to type
+  local -a vnufpargs=()
+  local pattype=""
+  local item
+  for item in "${VNU_FILTER_PATTERNS[@]}"; do
+    if   [[ ($item =~ ^--(css|html|svg|xml)$) ]]; then
+      pattype=$item
+    elif [[ ($pattype == "$vnutype") && (${#vnufpargs[@]} == 0) ]]; then
+      vnufpargs=( --filterpattern "$item" )
+    elif [[ ($pattype == "$vnutype") && (${#vnufpargs[@]} -gt 0) ]]; then
+      vnufpargs[1]+="|$item"
+    fi
+  done
+
   find . \( "${pruneconds[@]}" \) -prune -o \
          \( "${findconds[@]}"  \) -print0 |
   xargs --null --no-run-if-empty \
-  java -jar "$jfn" --Werror "${vnuargs[@]}" 2>&1 |
+  java -jar "$jfn" --Werror                     \
+                   "$vnutype"                   \
+                   "${vnufpargs[@]}"            \
+                   "${vnuargs[@]}" 2>&1 |
   # simplify URLified, absolute file names
   sed 's@^"file:[^"]*/\./\([^"]*\)":@\1:@'
 }
@@ -806,10 +845,15 @@ vnu()
   local failed=0
   local failedhtml=0
 
+  vnu0 -name '*.css' --css ||
+  failed=1
+
   # check HTML files as, well, HTML files
-  vnu0 -name '*.html' \
-       --html --filterpattern '^Trailing slash on void elements has no effect and interacts badly with unquoted attribute values\.$' ||
+  vnu0 -name '*.html' --html ||
   { failed=1; failedhtml=1; }
+
+  vnu0 -name '*.svg' --svg ||
+  failed=1
 
   # check HTML files as XML, which requires quoting XML-special
   # characters in script and style blocks
@@ -826,13 +870,6 @@ vnu()
   [[ $failedhtml == 1 ]] ||
   ( cd "$tdn/vnu" && vnu0 -type f --xml ) ||
   { failed=1; failedhtml=1; }
-
-  vnu0 -name '*.svg' \
-       --svg --filterpattern '^This validator does not validate RDF\. RDF subtrees go unchecked\.$' ||
-  failed=1
-
-  vnu0 -name '*.css' --css ||
-  failed=1
 
   return $failed
 }
