@@ -123,14 +123,14 @@ your browser to extend the scope of this add-on:
 
 ## Generally Useful Options
 
-<!-- (sync-mark-in-input-elements) -->
-### Copy-on-select in input elements
+<!-- (sync-mark-in-input-fields) -->
+### Copy-on-select in input fields
 
 If this option is checked, copy-on-select also processes
 selections in input fields, like text boxes or text areas.
 
 The interesting question here is why you would want to switch
-that off?  Because in editable input elements you occasionally
+that off?  Because in editable input fields you occasionally
 might want to mark text not to copy it, but rather to overwrite
 it with what is on the clipboard ... and that you just have
 overwritten by marking the text you wanted to overwrite.
@@ -201,11 +201,10 @@ In All Versions
 
 Since Version 2.6
 
-<!-- (sync-mark-in-input-elements) -->
+<!-- (sync-mark-in-input-fields) -->
 - For some non-standard input fields copy-on-select is always
-  active, regardless of option "Copy-on-select in input
-  elements".  See ["pontoon.mozilla.org" input form
-  problem][issue_12].
+  active, regardless of option "Copy-on-select in input fields".
+  See ["pontoon.mozilla.org" input form problem][issue_12].
 
 [issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
 

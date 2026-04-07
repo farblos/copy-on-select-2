@@ -78,7 +78,7 @@ for this add-on to copy-on-select:
   Special Firefox pages (`about:*`, `view-source:*`), PDF
   documents, XML documents
 
-  Disabled input elements of a web page
+  Disabled input fields of a web page
 
 - *Probably possible, probably not:*
 
