@@ -134,9 +134,15 @@
     <h4>Monitor Clipboard vs. Primary Selection</h4>
 
     <p>Execute the following command in a terminal to monitor and
-    compare clipboard and primary selection:</p>
+    compare clipboard and primary selection on X11 or
+    Wayland:</p>
     <pre>watch -t -n1 -x bash -c \
       'c=$( xclip -o -se c ) p=$( xclip -o -se p )
+       printf "c:%3d %-74.74s\n" "${#c}" "${c@Q}"
+       printf "p:%3d %-74.74s\n" "${#p}" "${p@Q}"
+       test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
+    <pre>watch -t -n1 -x bash -c \
+      'c=$( wl-paste ) p=$( wl-paste --primary )
        printf "c:%3d %-74.74s\n" "${#c}" "${c@Q}"
        printf "p:%3d %-74.74s\n" "${#p}" "${p@Q}"
        test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
@@ -242,6 +248,28 @@ In thunder, lightning, or in rain?</textarea>
             class="twolinebox"
             sandbox=""
             src="https://farblos.github.io/copy-on-select-2/simple.html"></iframe>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Mixed Open Shadow DOM Text (BREAK)</h4>
+
+    <p>
+    When shall we three meet again<br/>
+    In thunder,
+    <span><template shadowrootmode="open">lightning</template></span>,
+    or in rain?
+    </p>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Mixed Closed Shadow DOM Text (BREAK)</h4>
+
+    <p>
+    When shall we three meet again<br/>
+    In thunder,
+    <span><template shadowrootmode="closed">lightning</template></span>,
+    or in rain?
+    </p>
     </section>
 
     <section class="twocolelt">

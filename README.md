@@ -60,6 +60,7 @@ is
 
 ## Restrictions
 
+<!-- (sync-mark-restrictions) -->
 Here are some cases where it is difficult or outright impossible
 for this add-on to copy-on-select:
 
@@ -70,8 +71,6 @@ for this add-on to copy-on-select:
 
   Special Firefox pages (`about:*`, `view-source:*`), PDF
   documents, XML documents
-
-  Some pages from `mozilla.org` domains
 
   Disabled input fields of a web page
 
@@ -198,6 +197,10 @@ In All Versions
 - Copy-on-select does not (and cannot) always properly handle
   multi-range selections, for example, not in input fields.  As a
   work-around you can switch on option "Use native copy command".
+
+- Copy-on-select (and all but the most recent browsers) do not
+  always properly handle selections that span text from multiple
+  shadow DOM trees.
 
 Since Version 2.6
 

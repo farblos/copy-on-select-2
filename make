@@ -849,6 +849,7 @@ vnu()
   failed=1
 
   # check HTML files as, well, HTML files
+  [[ $failedhtml == 1 ]] ||
   vnu0 -name '*.html' --html ||
   { failed=1; failedhtml=1; }
 

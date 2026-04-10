@@ -67,6 +67,7 @@ history](https://sr.ht/~jschmidt/copy-on-select-2#version-history)
 on the add-on homepage for information on what has changed since
 the fork.
 
+<!-- (sync-mark-restrictions) -->
 Here are some cases where it is difficult or outright impossible
 for this add-on to copy-on-select:
 
@@ -87,6 +88,11 @@ for this add-on to copy-on-select:
 
   Likewise web pages that rely on JavaScript libraries like
   CodeMirror for text input
+
+- *Configurable:*
+
+  Some pages are restricted by optional permissions, which you
+  can grant in the add-on manager of your browser
 
 Please consider opening an issue on the [support
 site](https://github.com/farblos/copy-on-select-2/issues) or send

@@ -17,7 +17,7 @@
 /* simulate the look of a textarea containing two lines.  Good
  * enough for us on FF. */
 .twolinebox {
-  height: calc( 2rem * 1.25 );
+  height: calc( 2rem * 1.5 );
   border: 1px solid gray;
   border-radius: 2px;
   padding: 2.5px;
