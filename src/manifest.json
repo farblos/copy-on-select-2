@@ -26,12 +26,14 @@
 
   "version": "[% version %]",
 
-  // (sync-mark-min-version)
   "browser_specific_settings": {
 [% IF (equal addontype "xpi") -%]
     "gecko": {
       "id": "[% addon_amo_id %]",
-      "strict_min_version": "[% addon_strict_min_vers %]"
+      "strict_min_version": "[% addon_strict_min_vers %]",
+      "data_collection_permissions": {
+        "required": [ "none" ]
+      }
     }
 [% END -%]
   },

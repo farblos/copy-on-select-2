@@ -105,9 +105,8 @@
 # openssl, perl, python (including the cryptography package), and
 # the following more mundane dependencies:
 #
-# - markdown2, xsltproc (Debian packages: python3-markdown2,
-#   xsltproc) to convert Markdown documentation to something that
-#   can be published on AMO
+# - mdformat (Debian packages: mdformat) to convert our Markdown
+#   documentation to something that can be published on AMO
 #
 # - cairosvg, URW Bookman fonts (Debian packages: cairosvg,
 #   fonts-urw-base35) to convert the add-on icon from SVG to PNG
@@ -150,8 +149,8 @@
 # - Function pp features a simple yet powerful template processor
 #   inspired in syntax by the Perl Template Toolkit.  And Lisp.
 #
-# - Function md2amohtml converts Markdown to the restricted AMO
-#   HTML ("some HTML allowed").
+# - Function md2amomd converts Markdown to the restricted AMO
+#   Markdown ("some Markdown allowed").
 #
 # - Function amojwt calculates an AMO JWT from an AMO JWT issuer
 #   and secret.
@@ -183,7 +182,7 @@
 #     TEST_BUILD=source
 #     . ./make
 #     amomd "Description en-US" < amo-metadata.md |
-#     md2amohtml /root 2
+#     md2amomd
 #
 # - xtrace
 #
@@ -207,6 +206,21 @@ ADDON_SLUG="copy-on-select-2"
 # non-description AMO metadata.  In both cases it maps any key
 # "$mdkey" from this hash to a template variable and JSON
 # variable, respectively, named "addon_${mdkey}".
+#
+# We would have set "strict_min_version" to the more precise
+# "115.31.0", but AMO does not let us, failing with an "unknown
+# version" error.  See https://discourse.mozilla.org/t/141082.
+# Furthermore, as of writing this, AMO complains with two
+# validation warnings after add-on upload
+#
+# - "Manifest key not supported by the specified minimum Firefox
+#   version"
+# - "Manifest key not supported by the specified minimum Firefox
+#   for Android version
+#
+# because of us using manifest key "data_collection_permissions".
+# We have decided to ignore these warnings, since FF 115.31.0
+# installs our add-on just fine despite of that manifest key.
 declare -A ADDON_METADATA=(
   'slug'        "$ADDON_SLUG"
   'name'        "Copy On Select 2"
@@ -216,7 +230,8 @@ declare -A ADDON_METADATA=(
   'support'     "~jschmidt/copy-on-select-2@lists.sr.ht"
 
   'amo_id'      "{dd97d42c-6560-4fb2-8db4-bf340824fde0}"
-  'strict_min_vers' "78.0"
+  # (sync-mark-min-version)
+  'strict_min_vers' "115.0"
 )
 
 #}}}
@@ -908,16 +923,18 @@ BEGIN {
 }
 
 # limit execution of all following actions to the first history
-# entry having the specified version (but do print the version
-# heading here)
+# entry having the specified version (but do not include the
+# version heading)
 (! invdescp) && (! versfndp) && ($0 == "Version " version) {
-  invdescp = 1; versfndp = 1; print; next;
+  invdescp = 1; versfndp = 1; next;
 }
 (! invdescp) {
    next;
 }
-(invdescp) && (/^Version 2(\.[1-9][0-9]*){1,2}$/) {
-   invdescp = 0; next;
+# use "+" instead of "{1,2}" here because of
+# https://github.com/ThomasDickey/original-mawk/issues/97
+(invdescp) && (/^Version 2(\.[1-9][0-9]*)+$/) {
+  invdescp = 0; next;
 }
 
 { print; }
@@ -981,119 +998,17 @@ EOF
 
 #}}}
 
-#{{{ md2amohtml
+#{{{ md2amomd
 
-# reads the Markdown on STDIN, converts it to XML, selects all
-# nodes matching the specified root XPath, converts them to HTML
-# allowed by AMO ("some HTML allowed"), and writes the latter to
-# STDOUT.
-#
-# AMO renders all newlines in AMO HTML as hard breaks, so this
-# function goes into some details to handle these in a way such
-# that the result is visually pleasing:
-#
-# - It replaces all newlines in non-ws-only text nodes by blanks.
-#
-# - It keeps ws-only text nodes not containing any newlines
-#   unchanged.
-#
-# - It keeps ws-only text nodes containing newlines below the
-#   specified whitespace level unchanged.
-#
-# - It replaces any remaining ws-only text nodes containing
-#   newlines by a single newline.
-#
-# This effectively means that (of course also depending on the
-# Markdown converter) all paragraph and other nodes below the
-# specified level are separated by an empty line while all others
-# are layed out immediately following each other.
-md2amohtml()
+# reads the Markdown on STDIN and converts it to something that
+# can be published on AMO
+md2amomd()
 {
-  if [[ ! -f "$tdn/xml2amohtml.xslt" ]]; then
-    cat << 'EOF' > "$tdn/xml2amohtml.xslt" # nxml-mode
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:output omit-xml-declaration="yes" indent="no"/>
-  <xsl:param name="root"/>
-  <xsl:param name="wslevel"/>
-
-  <!-- select new root nodes -->
-  <xsl:template match="/">
-    <xsl:apply-templates select="$root">
-      <xsl:with-param name="level" select="0"/>
-    </xsl:apply-templates>
-  </xsl:template>
-
-  <xsl:template match="node()">
-    <xsl:param name="level"/>
-    <xsl:choose>
-
-      <!-- process allowed AMO HTML nodes -->
-      <xsl:when test="self::a|self::abbr|self::acronym">
-        <xsl:copy>
-          <xsl:for-each select="@href|@title">
-            <xsl:copy select="."/>
-          </xsl:for-each>
-          <xsl:apply-templates select="node()">
-            <xsl:with-param name="level" select="$level + 1"/>
-          </xsl:apply-templates>
-        </xsl:copy>
-      </xsl:when>
-      <xsl:when test="self::b|self::blockquote|self::code|self::em|self::i|self::li|self::ol|self::strong|self::ul">
-        <xsl:copy>
-          <xsl:apply-templates select="node()">
-            <xsl:with-param name="level" select="$level + 1"/>
-          </xsl:apply-templates>
-        </xsl:copy>
-      </xsl:when>
-
-      <!-- replace newlines in non-whitespace-only text ... -->
-      <xsl:when test="self::text()[normalize-space()]">
-        <xsl:value-of select="translate(., '&#10;', ' ')"/>
-      </xsl:when>
-
-      <!-- ... and normalize remaining whitespace-only text
-        == depending on the whitespace level -->
-      <xsl:when test="self::text() and $level &lt; $wslevel">
-        <xsl:copy/>
-      </xsl:when>
-      <xsl:when test="self::text() and contains(., '&#10;')">
-        <xsl:text>&#10;</xsl:text>
-      </xsl:when>
-      <xsl:when test="self::text()">
-        <xsl:copy/>
-      </xsl:when>
-
-      <!-- drop all remaining non-element nodes -->
-      <xsl:when test="not(self::*)"/>
-
-      <!-- replace remaining element nodes by their contents -->
-      <xsl:otherwise>
-        <xsl:apply-templates select="node()">
-          <xsl:with-param name="level" select="$level + 1"/>
-        </xsl:apply-templates>
-      </xsl:otherwise>
-
-    </xsl:choose>
-  </xsl:template>
-
-</xsl:stylesheet>
-EOF
-  fi
-
-  # execute above style sheet on whatever the Markdown converter
-  # produces.  Be careful not to introduce extra newlines in the
-  # intermediate XML.
-  {
-    echo '<?xml version="1.0" encoding="UTF-8"?>'
-    echo -n '<root>'
-    markdown2 -x markdown-in-html | nrmlzws -n
-    echo -n '</root>'
-  } |
-  xsltproc --nonet                              \
-           --param root "$1"                    \
-           --param wslevel "$2"                 \
-           "$tdn/xml2amohtml.xslt" - |
+  sed -e '/^ *<!-- .* -->$/d'                   \
+      -e '/^ *<!-- /,/ -->$/d' |
+  mdformat --wrap no --end-of-line lf           \
+           --no-extensions --no-codeformatters  \
+           - |
   nrmlzws -i
 }
 
@@ -1605,7 +1520,8 @@ if [[ $localp == 1 ]]; then
   # annotated tag and push that tag, thus continuing the release
   # process on the SourceHut build service
   if [[ $relmode != "draft" ]]; then
-    git tag --sign --annotate --file "$tdn/reldesc.md" "$vversion" HEAD
+    ( printf 'Version %s\n\n' "$version"; cat "$tdn/reldesc.md" ) |
+    git tag --sign --annotate --file - "$vversion" HEAD
     git push origin "$vversion"
     exit 0
   fi
@@ -1742,7 +1658,7 @@ if [[ $relmode != "draft" ]]; then
     # extract the description and convert it to AMO HTML in a
     # temporary file
     amomd "Description $lcode" < amo-metadata.md |
-    md2amohtml /root 2 > "$tdn/amodesc-$lcode.html"
+    md2amomd > "$tdn/amodesc-$lcode.html"
 
     # build jq commandline options to pass the contents of that
     # temporary file as variable to jq
@@ -1824,7 +1740,7 @@ fi
 # is undoable and, hence, must come last in this build script.
 rsp=$( # generate the release description as AMO HTML ...
        if [[ $relmode != "draft" ]]; then
-         md2amohtml '/root/node()[position()>1]' 0 < "$tdn/reldesc.md"
+         md2amomd < "$tdn/reldesc.md"
        else
          echo -n "Unlisted draft release $version."
        fi |

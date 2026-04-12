@@ -10,6 +10,10 @@
   ==
   == SPDX-License-Identifier: MPL-2.0 -->
 
+[amo-cos2]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
+
+[smo-select]: https://support.mozilla.org/kb/mouse-shortcuts-perform-common-tasks#w_selecting-or-editing-text
+
 # Copy on Select 2 - A Productivity Tool Which Copies Selected Text to the Clipboard Automatically
 
 "Are you used to being able to highlight text and have it
@@ -31,11 +35,10 @@ raise the main mouse button, the current selection, if any, is
 copied to the clipboard.
 
 This works for [all the different ways to select text in
-Firefox](https://support.mozilla.org/kb/mouse-shortcuts-perform-common-tasks#w_selecting-or-editing-text),
-but there are some restrictions.  For example, you cannot
-copy-on-select on the `mozilla.org` page just referenced in the
-previous link.  For more information see [section
-Restrictions](#restrictions).
+Firefox][smo-select], but there are some restrictions.  For
+example, you cannot copy-on-select on the `mozilla.org` page just
+referenced in the previous link.  For more information see
+[section Restrictions](#restrictions).
 
 Much more feature-complete, probably even feature-bloated, was
 [AutocopySelection2Clipboard](https://addons.mozilla.org/en-US/firefox/addon/autocopyselection2clipboard),
@@ -45,9 +48,9 @@ is
 
 ## Installation
 
-- [Mozilla Firefox][link-amo] ("FF")
+- [Mozilla Firefox][amo-cos2] ("FF")
 
-  [![Firefox Latest](https://img.shields.io/amo/v/copy-on-select-2)][link-amo]
+  [![Firefox Latest](https://img.shields.io/amo/v/copy-on-select-2)][amo-cos2]
 
 - Chromium-based browsers (Brave, Ungoogled Chromium) ("cbb")
 
@@ -56,45 +59,41 @@ is
   (select the link on the version number!) and drag-and-drop it
   onto your browser or open it as a file with `Ctrl+O`.
 
-[link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
-
 ## Restrictions
 
 <!-- (sync-mark-restrictions) -->
 Here are some cases where it is difficult or outright impossible
 for this add-on to copy-on-select:
 
-- *Technically impossible:*
+*Technically impossible:*
 
-  Firefox user interface elements outside of the main web page
+- Firefox user interface elements outside of the main web page
   (URL bar, dialogues, etc.)
 
-  Special Firefox pages (`about:*`, `view-source:*`), PDF
+- Special Firefox pages (`about:*`, `view-source:*`), PDF
   documents, XML documents
 
-  Disabled input fields of a web page
+- Disabled input elements of a web page
 
-- *Probably possible, probably not:*
+*Probably possible, probably not:*
 
-  JavaScript-heavy web pages, in particular if they do funny
+- JavaScript-heavy web pages, in particular if they do funny
   things with the selection (https://docs.google.com)
 
-  Likewise web pages that rely on JavaScript libraries like
+- Likewise web pages that rely on JavaScript libraries like
   CodeMirror for text input
 
-- *Configurable:*
+*Configurable:*
 
-  Some pages are restricted by [optional
+- Some pages are restricted by [optional
   permissions](#required-and-optional-permissions), which you can
   grant in the add-on manager of your browser
 
 Please consider opening an issue on the [support
 site](https://github.com/farblos/copy-on-select-2/issues) or send
 a mail to the support email, available on the [Firefox Add-On
-Listing][link-amo], if you experience a web page where this
+Listing][amo-cos2], if you experience a web page where this
 add-on does not copy-on-select.
-
-[link-amo]: https://addons.mozilla.org/en-US/firefox/addon/copy-on-select-2
 
 ## Required and Optional Permissions
 
@@ -133,6 +132,37 @@ that off?  Because in editable input fields you occasionally
 might want to mark text not to copy it, but rather to overwrite
 it with what is on the clipboard ... and that you just have
 overwritten by marking the text you wanted to overwrite.
+
+Another interesting question is what *is* actually an input
+field?  The easy answer to that: Every element of an HTML page
+where you can edit text.  In practice, it is not that easy to
+detect whether some element can contain editable text or not, and
+copy-on-select can fail to properly detect that.
+
+<!-- (sync-mark-invert-input-select) -->
+### Invert c-o-s in input with modifier
+
+If this option is different from its default value `Never`, it
+specifies a modifier key that you can press to temporarily invert
+option "Copy-on-select in input fields".
+
+Suppose the latter option is unchecked, meaning that
+copy-on-select is normally disabled in input fields.  Now when
+you have configured this option to, say, `Alt`, then you can
+press key `Alt` to temporarily enable copy-on-select in input
+fields.
+
+Conversely, if you have checked option "Copy-on-select in input
+fields" and configured this option to `Alt`, then you can press
+key `Alt` to temporarily disable copy-on-select in input fields.
+
+For both usage scenarios ensure that your modifer key is still
+pressed when you *release* the mouse button after completing your
+selection in some input field: Only then does this add-on
+recognize the modifier state.  Finally note that both modifiers
+`Control` and `Shift` have a [predefined meaning][smo-select] in
+FF when selecting text, while `Alt` has not, at least not usually
+in input fields.
 
 ## Experimental Options
 
@@ -201,15 +231,6 @@ In All Versions
 - Copy-on-select (and all but the most recent browsers) do not
   always properly handle selections that span text from multiple
   shadow DOM trees.
-
-Since Version 2.6
-
-<!-- (sync-mark-in-input-fields) -->
-- For some non-standard input fields copy-on-select is always
-  active, regardless of option "Copy-on-select in input fields".
-  See ["pontoon.mozilla.org" input form problem][issue_12].
-
-[issue_12]: https://github.com/farblos/copy-on-select-2/issues/12
 
 Since Version 2.3
 

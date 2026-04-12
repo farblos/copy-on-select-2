@@ -133,6 +133,11 @@ class NoSelection extends COS2Selection
     return EMPTY_ARRAY;
   }
 
+  get editable()
+  {
+    return false;
+  }
+
   contains( _ )
   {
     return false;
@@ -182,6 +187,13 @@ class InputElementSelection extends COS2Selection
   {
     return (this._elt.selectionStart < this._elt.selectionEnd) ?
            [ this ] : EMPTY_ARRAY;
+  }
+
+  get editable()
+  {
+    return true &&
+      (("readOnly" in this._elt) && (! this._elt.readOnly)) &&
+      (! (this._elt.ariaReadOnly === "true"));
   }
 
   contains( e )
@@ -259,6 +271,17 @@ class PageSelection extends COS2Selection
   get ranges()
   {
     return this.ncranges();
+  }
+
+  get editable()
+  {
+    let start = this._sel.getRangeAt( 0 ).startContainer;
+    if ( start.nodeType === Node.TEXT_NODE )
+      start = start.parentNode;
+    let end = this._sel.getRangeAt( 0 ).endContainer;
+    if ( end.nodeType === Node.TEXT_NODE )
+      end = end.parentNode;
+    return start.isContentEditable && end.isContentEditable;
   }
 
   contains( e )
@@ -352,8 +375,15 @@ class CopyOnSelect
     if ( sel.collapsed )
       return;
 
-    if ( (sel instanceof InputElementSelection) &&
-         (! this.in_input_elements) )
+    if ( (sel.editable) &&
+         (! this.in_input_elements) &&
+         ((this.invert_input_select === "never") ||
+          (! e[this.invert_input_select + "Key"])) )
+      return;
+    if ( (sel.editable) &&
+         (this.in_input_elements) &&
+         (this.invert_input_select !== "never") &&
+         (e[this.invert_input_select + "Key"]) )
       return;
 
     // detect mouseup events in an existing selection.  On FF at

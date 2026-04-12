@@ -107,7 +107,16 @@ async function saveOptions( ...args )
   }
 }
 
-const OPTION_VERSION = 1;
+// define available key and button modifiers
+const MODIFIERS = Object.freeze( {
+  "alt":   1,
+  "ctrl":  1,
+  "meta":  1,
+  "shift": 1,
+} );
+
+// define current option set version
+const OPTION_VERSION = 2;
 
 // define available options, their default values (from which we
 // also derive the option value type), and some optional option
@@ -131,6 +140,20 @@ const OPTION_METADATA = {
 
   in_input_elements: {
     default: false,
+  },
+
+  invert_input_select: {
+    default: "never",
+
+    check: ( value, _ ) => {
+      if ( (value === "never") ||
+           (Object.hasOwn( MODIFIERS, value )) ) {
+        return [ true, null ];
+      }
+      else {
+        return [ false, `Invalid modifier "${value}"` ];
+      }
+    },
   },
 
   use_native_copy: {

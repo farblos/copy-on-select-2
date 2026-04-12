@@ -14,10 +14,17 @@
   --logo-color: #b5d5ff;
 }
 
-/* simulate the look of a textarea containing two lines.  Good
- * enough for us on FF. */
+/* simulate the look of a textarea containing two or four lines.
+ * Last we checked on FF, a one-lined text box had a height of
+ * 22.5 and one rem had a height of 16. */
 .twolinebox {
-  height: calc( 2rem * 1.5 );
+  height: calc( 2rem * 45 / 32 );
+  border: 1px solid gray;
+  border-radius: 2px;
+  padding: 2.5px;
+}
+.fourlinebox {
+  height: calc( 4rem * 45 / 32 );
   border: 1px solid gray;
   border-radius: 2px;
   padding: 2.5px;

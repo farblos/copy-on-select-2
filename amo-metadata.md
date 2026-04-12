@@ -71,27 +71,27 @@ the fork.
 Here are some cases where it is difficult or outright impossible
 for this add-on to copy-on-select:
 
-- *Technically impossible:*
+*Technically impossible:*
 
-  Firefox user interface elements outside of the main web page
+- Firefox user interface elements outside of the main web page
   (URL bar, dialogues, etc.)
 
-  Special Firefox pages (`about:*`, `view-source:*`), PDF
+- Special Firefox pages (`about:*`, `view-source:*`), PDF
   documents, XML documents
 
-  Disabled input fields of a web page
+- Disabled input elements of a web page
 
-- *Probably possible, probably not:*
+*Probably possible, probably not:*
 
-  JavaScript-heavy web pages, in particular if they do funny
+- JavaScript-heavy web pages, in particular if they do funny
   things with the selection (https://docs.google.com)
 
-  Likewise web pages that rely on JavaScript libraries like
+- Likewise web pages that rely on JavaScript libraries like
   CodeMirror for text input
 
-- *Configurable:*
+*Configurable:*
 
-  Some pages are restricted by optional permissions, which you
+- Some pages are restricted by optional permissions, which you
   can grant in the add-on manager of your browser
 
 Please consider opening an issue on the [support

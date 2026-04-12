@@ -21,10 +21,9 @@ packages:
   - cairosvg
   - fonts-urw-base35
   - jq
+  - mdformat
   - python3-cryptography
-  - python3-markdown2
   - reuse
-  - xsltproc
 
 sources:
   - https://git.sr.ht/~jschmidt/copy-on-select-2

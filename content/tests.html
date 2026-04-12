@@ -95,7 +95,7 @@
     <!-- (sync-mark-min-version) -->
     <pre>( cd ~/work/copy-on-select-2 &amp;&amp;
   MOZ_FORCE_DISABLE_E10S=1 \
-  ./collateral/firefox-78/firefox -profile collateral/tprof-78 ) &amp;</pre>
+  ./collateral/firefox-115/firefox -profile collateral/tprof-115 ) &amp;</pre>
 
     <p>Then open the XPI package to be tested
     with <code>C-o</code>, open a new tab to perform the tests
@@ -134,15 +134,15 @@
     <h4>Monitor Clipboard vs. Primary Selection</h4>
 
     <p>Execute the following command in a terminal to monitor and
-    compare clipboard and primary selection on X11 or
-    Wayland:</p>
+    compare clipboard and primary selection on Wayland or
+    X11:</p>
     <pre>watch -t -n1 -x bash -c \
-      'c=$( xclip -o -se c ) p=$( xclip -o -se p )
+      'c=$( wl-paste ) p=$( wl-paste --primary )
        printf "c:%3d %-74.74s\n" "${#c}" "${c@Q}"
        printf "p:%3d %-74.74s\n" "${#p}" "${p@Q}"
        test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
     <pre>watch -t -n1 -x bash -c \
-      'c=$( wl-paste ) p=$( wl-paste --primary )
+      'c=$( xclip -o -se c ) p=$( xclip -o -se p )
        printf "c:%3d %-74.74s\n" "${#c}" "${c@Q}"
        printf "p:%3d %-74.74s\n" "${#p}" "${p@Q}"
        test "$c" = "$p" &amp;&amp; echo PASS || echo FAIL'</pre>
@@ -167,6 +167,10 @@ done</pre>
 
     <p>Reset all options before performing the following
     tests.</p>
+
+    <!-- (sync-mark-use-native-copy) -->
+    <p>After the first test pass, switch on the use of the native
+    copy command; then perform a second pass on below tests.</p>
     </section>
 
     <p class="flexsep"></p>
@@ -192,47 +196,10 @@ In thunder, lightning, or in rain?</textarea>
     </section>
 
     <section class="twocolelt">
-    <h4>Text Area Text (FAIL)</h4>
-
-    <textarea id="43b446ea-5b35-11ef-aa67-1b5fc220d720"
-              class="copy"
-              rows="2"
-              spellcheck="false">When shall we three meet again
-In thunder, lightning, or in rain?</textarea>
-    </section>
-
-    <!-- (sync-mark-in-input-fields) -->
-    <section class="twocolelt">
-    <h4>Text Area Text with Input Field Option (PASS)</h4>
-
-    <p>Switch on the input field option and repeat the previous
-    test.  (<a target="_blank"
-    href="https://github.com/farblos/copy-on-select-2/issues/6">GitHub
-    issue 6</a>)</p>
-    </section>
-
-    <section class="twocolelt">
-    <h4>Text Box Text (FAIL)</h4>
-
-    <input id="4dd00330-5b35-11ef-913a-331c876ca8bd"
-           type="text"
-           spellcheck="false"
-           value="When shall we three meet again"/>
-    </section>
-
-    <!-- (sync-mark-in-input-fields) -->
-    <section class="twocolelt">
-    <h4>Text Box Text with Input Field Option (PASS)</h4>
-
-    <p>Switch on the input field option and repeat the previous
-    test.</p>
-    </section>
-
-    <section class="twocolelt">
     <h4>Iframe Text (PASS)</h4>
 
     <!-- (sync-mark-min-version) -->
-    <p>(The iframe tests result in a FAIL on Firefox 78.  And I
+    <p>(The iframe tests result in a FAIL on Firefox 115.  And I
     am not going to document that otherwise or even work around
     it!)</p>
 
@@ -249,6 +216,8 @@ In thunder, lightning, or in rain?</textarea>
             sandbox=""
             src="https://farblos.github.io/copy-on-select-2/simple.html"></iframe>
     </section>
+
+    <p class="flexsep"></p>
 
     <section class="twocolelt">
     <h4>Mixed Open Shadow DOM Text (BREAK)</h4>
@@ -291,9 +260,8 @@ In thunder, lightning, or in rain?</textarea>
     <p class="twolinebox" contenteditable=""></p>
     </section>
 
-    <!-- (sync-mark-min-version) -->
     <section class="twocolelt">
-    <h4>Non-Text (FAIL, non-FF-78 only)</h4>
+    <h4>Non-Text (FAIL/PASS)</h4>
 
     <p>Select the following image.  Without native copy that
     should clear the primary selection, but not the clipboard.
@@ -312,20 +280,82 @@ In thunder, lightning, or in rain?</textarea>
     <p class="flexsep"></p>
 
     <section class="twocolelt">
+    <h4>Read-Only Text Area Text (PASS)</h4>
+
+    <textarea id="6394eb31-3669-11f1-aa52-44e517f14fdc"
+              class="copy"
+              rows="2"
+              spellcheck="false"
+              readonly="">When shall we three meet again
+In thunder, lightning, or in rain?</textarea>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Read-Only Text Box Text (PASS)</h4>
+
+    <input id="6c649836-3669-11f1-ae7c-44e517f14fdc"
+           type="text"
+           spellcheck="false"
+           readonly=""
+           value="When shall we three meet again"/>
+    </section>
+
+    <section class="twocolelt">
+    <h4>ARIA Read-Only Text Box Text (PASS)</h4>
+
+    <p>Simulate an input field that has been made read-only
+    programatically, like GitHub has it.</p>
+    <input id="b34d7d9e-366a-11f1-8041-44e517f14fdc"
+           type="text"
+           spellcheck="false"
+           aria-readonly="true"
+           value="When shall we three meet again"/>
+    <script>
+      document.currentScript.previousElementSibling.
+        addEventListener( "keydown", ( e ) => {
+          if ( e.altKey || e.ctrlKey || e.metaKey || e.shiftKey ) return;
+          e.preventDefault(); alert( "No keys handled here!" );
+        } );
+    </script>
+    </section>
+
+    <section class="twocolelt">
+    <h4>ARIA Read-Only Text Area Text (PASS)</h4>
+
+    <textarea id="a9f16731-366a-11f1-bdd1-44e517f14fdc"
+              class="copy"
+              rows="2"
+              spellcheck="false"
+              aria-readonly="true">When shall we three meet again
+In thunder, lightning, or in rain?</textarea>
+    </section>
+    <script>
+      document.currentScript.previousElementSibling.
+        addEventListener( "keydown", ( e ) => {
+          if ( e.altKey || e.ctrlKey || e.metaKey || e.shiftKey ) return;
+          e.preventDefault(); alert( "No keys handled here!" );
+        } );
+    </script>
+
+    <p class="flexsep"></p>
+
+    <section class="twocolelt">
     <h4>Tests Requiring Separate Pages</h4>
 
     <!-- Keep things simple here and do not implement the
       == following tests as iframes. -->
 
     <ul class="test">
-    <li><a href="cancel-event.html">cancel-event</a>: Install a
-    bubbling event handler on <code>window.document</code> that
-    stops propagation of all <code>mouseup</code> events.
+    <li><a target="_blank"
+    href="cancel-event.html">cancel-event</a>: Install a bubbling
+    event handler on <code>window.document</code> that stops
+    propagation of all <code>mouseup</code> events.
     (<a target="_blank"
     href="https://github.com/farblos/copy-on-select-2/issues/4">GitHub
     issue 4</a>)</li>
 
-    <li><a href="body-change.html">body-change</a>: Replace the
+    <li><a target="_blank"
+    href="body-change.html">body-change</a>: Replace the
     document's body element in a delayed manner.
     (<a target="_blank"
     href="https://github.com/farblos/copy-on-select-2/issues/8">GitHub
@@ -337,8 +367,8 @@ In thunder, lightning, or in rain?</textarea>
     <h4>Tests Requiring External Pages</h4>
 
     <ul class="test">
-    <li>Copy text from <a target="_blank"
-    href="file:///tmp/simple.html">a local test file</a>.
+    <li>Use <code>C-t</code> <code>C-o</code> <code>C-r</code> to
+    open local test file <code>/tmp/simple.html</code>.
     (PASS)</li>
 
     <li>Copy text from <a target="_blank"
@@ -357,12 +387,95 @@ In thunder, lightning, or in rain?</textarea>
     </ul>
     </section>
 
+    <section class="onecolelt">
+    <h3>Input Fields</h3>
+
+    <p>Reset all options before performing the following tests;
+    then process below tests repeatedly as follows:</p>
+
+    <ol>
+
+    <li>Process the tests with options reset to default and
+    ensure that the tests FAIL.  Even in the content-editable
+    input fields. (<a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/12">GitHub
+    issue 12</a>, <a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/16">GitHub
+    issue 16</a>)</li>
+
+    <!-- (sync-mark-invert-input-select) -->
+    <li>Select <code>Alt</code> as input inversion modifier;
+    process the tests without pressing the <code>Alt</code> key
+    and ensure that the tests FAIL.</li>
+
+    <li>Process the tests while pressing the <code>Alt</code> key
+    and ensure that the tests PASS.</li>
+
+    <!-- (sync-mark-in-input-fields) -->
+    <li>Reset all options again; switch on the input field
+    option; process the tests and ensure that the tests PASS.
+    (<a target="_blank"
+    href="https://github.com/farblos/copy-on-select-2/issues/6">GitHub
+    issue 6</a>)</li>
+
+    <!-- (sync-mark-invert-input-select) -->
+    <li>Select <code>Alt</code> as input inversion modifier;
+    process the tests without pressing the <code>Alt</code> key
+    and ensure that the tests PASS.</li>
+
+    <li>Process the tests while pressing the <code>Alt</code> key
+    and ensure that the tests FAIL.</li>
+
+    </ol>
+    </section>
+
     <p class="flexsep"></p>
 
-    <!-- (sync-mark-use-native-copy) -->
-    <p class="onecolelt">After the first test pass reset all
-    options again; switch on the use of the native copy command;
-    then perform a second pass on above tests.</p>
+    <section class="twocolelt">
+    <h4>Text Box Text (FAIL/PASS)</h4>
+
+    <input id="4dd00330-5b35-11ef-913a-331c876ca8bd"
+           type="text"
+           spellcheck="false"
+           value="When shall we three meet again"/>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Text Area Text (FAIL/PASS)</h4>
+
+    <textarea id="43b446ea-5b35-11ef-aa67-1b5fc220d720"
+              class="copy"
+              rows="2"
+              spellcheck="false">When shall we three meet again
+In thunder, lightning, or in rain?</textarea>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Content-Editable Input Field (FAIL/PASS)</h4>
+
+    <p>Content-editable input field that inherits its editable
+    property from a surrounding element.</p>
+    <div contenteditable="">
+    <p style="margin: 0px"
+       class="twolinebox"
+       spellcheck="false">When shall we three meet again<br/>
+In thunder, lightning, or in rain?</p>
+    </div>
+    </section>
+
+    <section class="twocolelt">
+    <h4>Mixed Content-Editable Input Field (FAIL/PASS)</h4>
+
+    <p>Partially content-editable input field, where the middle
+    two lines are not content-editable.  Ensure to include text
+    from the first and last line in the selection.</p>
+    <p class="fourlinebox"
+       spellcheck="false"
+       contenteditable="true">When shall we three meet again<br/>
+<span contenteditable="false">In thunder, lightning, or in rain?<br/>
+When the hurlyburly's done,</span><br/>
+When the battle's lost and won.</p>
+    </section>
 
     <h3>Option Page</h3>
 
@@ -537,8 +650,8 @@ plasma-apply-colorscheme BreezeDark</pre>
     <h4>Dark Theme on Onboarding Page</h4>
 
     <ul class="test">
-    <li>Open the <a href="onboarding.html">onboarding page</a>;
-    execute
+    <li>Open the <a target="_blank"
+    href="onboarding.html">onboarding page</a>; execute
     <pre>( cd ~/.config &amp;&amp;
   cp -p kdeglobals kdeglobals.orig )
 plasma-apply-colorscheme BreezeDark</pre>
@@ -556,8 +669,8 @@ plasma-apply-colorscheme BreezeDark</pre>
     <h4>Dark Theme on Index Page</h4>
 
     <ul class="test">
-    <li>Open the <a href=".">index page</a>, referring to it
-    without the trailing <code>index.html</code>; execute
+    <li>Open the <a href=".">index page</a>, ensuring to refer to
+    it without the trailing <code>index.html</code>; execute
     <pre>( cd ~/.config &amp;&amp;
   cp -p kdeglobals kdeglobals.orig )
 plasma-apply-colorscheme BreezeDark</pre>
