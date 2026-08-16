@@ -275,6 +275,41 @@ assemble the pieces to what other add-ons need.
 
 ## Version History
 
+Version 2.10
+
+*Add-On Changes*
+
+- Improves detection of input fields, which fixes issues
+  [#12](https://github.com/farblos/copy-on-select-2/issues/12) and
+  [#16](https://github.com/farblos/copy-on-select-2/issues/16).
+
+- Adds an option to invert copy-on-select in input fields when a
+  user-configurable modifier is pressed.
+
+- Uses a consistent web page layout for the onboarding page and
+  all other collateral web pages that respects dark themes.
+
+- Documents potential issues when selecting text from multiple
+  shadow DOM trees.
+
+*Infrastructure Changes*
+
+- Adds a simple preprocessor which replaces, for example, some
+  ugly CRX3-specific code in the build script.  In addition, the
+  preprocessor allows the use of different add-on homepages for
+  draft and final releases, plus some other nice features.
+
+- Adds linting of JavaScript, HTML, CSS with ESLint and v.Nu.
+
+- Adds tests for new features, adds a test for cross-site
+  iframes, adds a lot of general test instructions.
+
+- Adapts to process and metadata changes on AMO.
+
+- Adds mirroring from SourceHut to GitHub.
+
+- Adds a convenience stub makefile.
+
 Version 2.9
 
 - Fixes issue [Settings --> Checkbox names are not displayed][issue_15].
